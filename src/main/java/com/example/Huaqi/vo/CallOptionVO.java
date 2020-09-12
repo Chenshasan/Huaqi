@@ -1,6 +1,8 @@
 package com.example.Huaqi.vo;
+
 import java.util.Date;
-public class PutOption {
+
+public class CallOptionVO {
     String name;
     int price;
     int execPrice;

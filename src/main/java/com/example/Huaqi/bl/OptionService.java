@@ -1,6 +1,4 @@
 package com.example.Huaqi.bl;
-import com.example.Huaqi.vo.CallOption;
-import com.example.Huaqi.vo.PutOption;
 import com.example.Huaqi.vo.ResponseVO;
 
 public interface OptionService {

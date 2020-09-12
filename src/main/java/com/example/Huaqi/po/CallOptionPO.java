@@ -1,8 +1,8 @@
-package com.example.Huaqi.vo;
+package com.example.Huaqi.po;
 
 import java.util.Date;
 
-public class CallOption {
+public class CallOptionPO {
     String name;
     int price;
     int execPrice;
@@ -56,6 +56,4 @@ public class CallOption {
     public void setTime(Date time) {
         this.time = time;
     }
-
-
 }
