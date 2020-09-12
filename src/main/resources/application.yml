@@ -14,5 +14,5 @@ spring:
 
 
 mybatis:
-  mapper-locations: classpath:dataImpl/*/*Mapper.xml
+  mapper-locations: classpath:dataImpl/*Mapper.xml
 
