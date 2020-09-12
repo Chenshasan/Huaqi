@@ -101,6 +101,7 @@ public class OptionServiceImpl implements OptionService {
             int timePrice=Math.max(Puts.get(i).getExecPrice()-Puts.get(i).getETFPrice(),0);
             if(timePrice<0){
                 int n=m*10000;//对应应该买入50ETF的数量
+                int outprice=0;//挂价
                 /*
                 TODO 调用买入认沽期权和50ETF的API
                  */
