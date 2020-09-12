@@ -56,6 +56,4 @@ public class CallOption {
     public void setTime(Date time) {
         this.time = time;
     }
-
-
 }
