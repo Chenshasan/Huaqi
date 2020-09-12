@@ -95,6 +95,19 @@ public class OptionServiceImpl implements OptionService {
 
     @Override
     public ResponseVO purchasePutOption(){
+        List<PutOptionVO>Puts=new ArrayList<PutOptionVO>();
+        int delta=0;
+        int m=0;//买入认沽期权的数量
+        for(int i=0;i<Puts.size();i++){
+            int timePrice=Math.max(Puts.get(i).getExecPrice()-Puts.get(i).getETFPrice(),0);
+            if(timePrice<0){
+                int n=m*10000;//对应应该买入50ETF的数量
+                int outprice=0;//挂价
+                /*
+                TODO 调用买入认沽期权和50ETF的API
+                 */
+            }
+        }
         return ResponseVO.buildSuccess();
     }
 
