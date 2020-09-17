@@ -9,7 +9,13 @@ import org.json.JSONObject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 
+import javax.servlet.ServletContext;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,12 +28,36 @@ import java.util.stream.Collectors;
  */
 @Service
 public class OptionServiceImpl implements OptionService {
-
-    @Override
-    public ResponseVO purchaseCallOption(){
-        List<CallOptionVO>Calls=new ArrayList<CallOptionVO>();
-        List<PutOptionVO>Puts=new ArrayList<PutOptionVO>();
+    List<CallOptionVO>Calls=new ArrayList<CallOptionVO>();
+    List<PutOptionVO>Puts=new ArrayList<PutOptionVO>();
+    public OptionServiceImpl() throws FileNotFoundException {
+        //参数是一个日期，用来确认需要拿哪一天的期权
+        File path = new File(ResourceUtils.getURL("classpath:").getPath());
+        if(!path.exists()) path = new File("");
+        String p=path.getAbsolutePath();
+        p=p.substring(0,p.length()-20);
+        p=p+"\\src\\main\\java\\com\\example\\Huaqi\\blImpl\\testMock.py";
+        System.out.println("path:"+p);
+        String[] arguments = new String[] {"python", p,"2020-09-16"};
         String Json="";
+        try {
+            Process process = Runtime.getRuntime().exec(arguments);//调用python
+            BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream(),"GBK"));
+            //数据都在in里面
+            String line = null;
+            while ((line = in.readLine()) != null) {
+                Json=Json+line;
+            }
+            in.close();
+            System.out.println(Json);
+            //java代码中的process.waitFor()返回值为0表示我们调用python脚本成功，
+            //返回值为1表示调用python脚本失败，这和我们通常意义上见到的0与1定义正好相反
+//            int re = process.waitFor();
+//            System.out.println(re);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         JSONArray array=new JSONArray(Json);
         for(int i=0;i<array.length();i++) {
             try {
@@ -62,12 +92,17 @@ public class OptionServiceImpl implements OptionService {
                     putOptionVO.setAvg1_2(avg1_2);
                     Puts.add(putOptionVO);
                 }
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+        System.out.println(Calls.toString());
+        System.out.println(Puts.toString());
+    }
 
+
+    @Override
+    public ResponseVO purchaseCallOption(){
         for(int i=0;i<Calls.size();i++){
             double timePrice=Math.max(Calls.get(i).getETFPrice()-Calls.get(i).getExecPrice(),0);
             if(timePrice<0){
@@ -85,12 +120,12 @@ public class OptionServiceImpl implements OptionService {
                     }
                 }
 
-                if(Purchase.size()>=Calls.get(i).getDelta()){
-                    //调用认购期权与相应认沽期权的购买API
-                    int outPrice=0;
-                    myThreads x=new myThreads(Calls.get(i),Purchase,outPrice);
-                    x.start();
-                }
+//                if(Purchase.size()>=Calls.get(i).getDelta()){
+//                    调用认购期权与相应认沽期权的购买API
+//                    int outPrice=0;
+//                    myThreads x=new myThreads(Calls.get(i),Purchase,outPrice);
+//                    x.start();
+//                }
             }
         }
         return ResponseVO.buildSuccess();
@@ -144,10 +179,9 @@ public class OptionServiceImpl implements OptionService {
     @Override
     public ResponseVO purchasePutOption(){
         List<PutOptionVO>Puts=new ArrayList<PutOptionVO>();
-        int delta=0;
         int m=0;//买入认沽期权的数量
         for(int i=0;i<Puts.size();i++){
-            int timePrice=Math.max(Puts.get(i).getExecPrice()-Puts.get(i).getETFPrice(),0);
+            double timePrice=Math.max(Puts.get(i).getExecPrice()-Puts.get(i).getETFPrice(),0);
             if(timePrice<0){
                 int n=m*10000;//对应应该买入50ETF的数量
                 int outprice=0;//挂价
