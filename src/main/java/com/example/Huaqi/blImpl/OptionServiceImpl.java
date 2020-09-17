@@ -64,6 +64,7 @@ public class OptionServiceImpl implements OptionService {
             FutureTask<Integer> futureTask = new FutureTask<Integer>(task);
             Thread thread = new Thread(futureTask);
             thread.start();
+            System.out.println("threads is running");
 
             try {
                 futureTask.get(10000, TimeUnit.MILLISECONDS);

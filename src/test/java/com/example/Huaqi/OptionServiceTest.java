@@ -10,7 +10,7 @@ public class OptionServiceTest extends HuaqiApplicationTests{
     private OptionService optionService;
 
     @Test
-    public void testGetEntFileById(){
+    public void testPurchaseCallOption(){
         optionService.purchaseCallOption();
     }
 }
