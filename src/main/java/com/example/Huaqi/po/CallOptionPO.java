@@ -3,12 +3,15 @@ package com.example.Huaqi.po;
 import java.util.Date;
 
 public class CallOptionPO {
+    String optioncode;//唯一标识符
     String name;
-    int price;
-    int execPrice;
+    double price;
+    double execPrice;
     String ETFName;
-    int ETFPrice;
+    double ETFPrice;
     Date time;
+    double delta;
+    double avg1_2;//买一买二平均值
     public String getName() {
         return name;
     }
@@ -17,19 +20,19 @@ public class CallOptionPO {
         this.name = name;
     }
 
-    public int getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 
-    public int getExecPrice() {
+    public double getExecPrice() {
         return execPrice;
     }
 
-    public void setExecPrice(int execPrice) {
+    public void setExecPrice(double execPrice) {
         this.execPrice = execPrice;
     }
 
@@ -41,11 +44,11 @@ public class CallOptionPO {
         this.ETFName = ETFName;
     }
 
-    public int getETFPrice() {
+    public double getETFPrice() {
         return ETFPrice;
     }
 
-    public void setETFPrice(int ETFPrice) {
+    public void setETFPrice(double ETFPrice) {
         this.ETFPrice = ETFPrice;
     }
 
@@ -55,5 +58,29 @@ public class CallOptionPO {
 
     public void setTime(Date time) {
         this.time = time;
+    }
+
+    public void setOptioncode(String optioncode) {
+        this.optioncode = optioncode;
+    }
+
+    public String getOptioncode() {
+        return optioncode;
+    }
+
+    public double getDelta() {
+        return delta;
+    }
+
+    public void setDelta(double delta) {
+        this.delta = delta;
+    }
+
+    public double getAvg1_2() {
+        return avg1_2;
+    }
+
+    public void setAvg1_2(double avg1_2) {
+        this.avg1_2 = avg1_2;
     }
 }
