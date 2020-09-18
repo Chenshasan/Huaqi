@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 public class OptionServiceImpl implements OptionService {
     List<CallOptionVO>Calls=new ArrayList<CallOptionVO>();
     List<PutOptionVO>Puts=new ArrayList<PutOptionVO>();
+    public double D=0.7;    //暂定阈值
     public OptionServiceImpl() throws FileNotFoundException {
         //参数是一个日期，用来确认需要拿哪一天的期权
         File path = new File(ResourceUtils.getURL("classpath:").getPath());

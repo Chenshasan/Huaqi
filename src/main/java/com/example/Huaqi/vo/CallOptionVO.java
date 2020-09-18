@@ -2,7 +2,7 @@ package com.example.Huaqi.vo;
 
 import java.util.Date;
 
-public class CallOptionVO {
+public class CallOptionVO implements Comparable<CallOptionVO>{
     String optioncode; //唯一标识符
     String name;//期权名
     double price;//期权价格
@@ -79,4 +79,15 @@ public class CallOptionVO {
     public void setAvg1_2(double avg1_2) {
         this.avg1_2 = avg1_2;
     }
+
+    //把List按delta值的升序排列，能顺序向上取到
+    @Override
+    public int compareTo(CallOptionVO callOptionVO){
+        if(this.getDelta()-callOptionVO.getDelta()>=0){
+            return 1;
+        }else {
+            return -1;
+        }
+    }
+
 }

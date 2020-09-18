@@ -1,6 +1,6 @@
 package com.example.Huaqi.vo;
 import java.util.Date;
-public class PutOptionVO {
+public class PutOptionVO implements Comparable<PutOptionVO> {
     String optioncode;//唯一标识符
     String name;
     double price;
@@ -10,6 +10,7 @@ public class PutOptionVO {
     Date time;
     double delta;
     double avg1_2;//买一买二平均值
+
     public String getName() {
         return name;
     }
@@ -80,5 +81,16 @@ public class PutOptionVO {
 
     public void setAvg1_2(double avg1_2) {
         this.avg1_2 = avg1_2;
+    }
+
+    //把List按delta值的升序排列，能顺序向上取到
+    @Override
+    public int compareTo(PutOptionVO putOptionVO){
+        if(this.getDelta()-putOptionVO.getDelta()>=0){
+            return 1;
+        }else {
+            return -1;
+        }
+
     }
 }
