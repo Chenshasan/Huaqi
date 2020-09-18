@@ -17,9 +17,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
@@ -107,18 +105,18 @@ public class OptionServiceImpl implements OptionService {
         for(int i=0;i<Calls.size();i++){
             double timePrice=Math.max(Calls.get(i).getETFPrice()-Calls.get(i).getExecPrice(),0);
             if(timePrice<0){
-                int selectIndex=-1;
+                List<PutOptionVO>purchaseList=new ArrayList<>();//认购期权对应的认沽期权List
                 for(int j=0;j<Puts.size();j++){
                     if(Calls.get(i).getOptioncode().equals(Puts.get(j).getOptioncode())){
-                        if(selectIndex==-1){
-                            selectIndex=j;
-                        }
-                        else{
-                            if(Puts.get(j).getDelta()<=Puts.get(selectIndex).getDelta()){
-                                selectIndex=j;
-                            }
+                        purchaseList.add(Puts.get(i));
                         }
                     }
+                /*
+                对于时间价值为负的认购期权，挑出它对应的认沽期权并按delta的升序排序
+                这样就能顺序从List中取出delta值尽可能小的期权购买
+                若当前delta值对应的期权数量不够，那么就取第二小的，以此类推
+                 */
+                Collections.sort(purchaseList);
                 }
 
 //                if(Purchase.size()>=Calls.get(i).getDelta()){
@@ -128,7 +126,7 @@ public class OptionServiceImpl implements OptionService {
 //                    x.start();
 //                }
             }
-        }
+
         return ResponseVO.buildSuccess();
     }
 
