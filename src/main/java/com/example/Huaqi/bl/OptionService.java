@@ -15,4 +15,6 @@ public interface OptionService {
      * @return
      */
     ResponseVO purchasePutOption();
+
+    void TestConnection();
 }

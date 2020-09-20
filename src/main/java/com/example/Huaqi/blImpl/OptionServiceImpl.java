@@ -4,6 +4,13 @@ import com.example.Huaqi.bl.OptionService;
 import com.example.Huaqi.vo.CallOptionVO;
 import com.example.Huaqi.vo.PutOptionVO;
 import com.example.Huaqi.vo.ResponseVO;
+import org.apache.http.HttpEntity;
+import org.apache.http.ParseException;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.BeanUtils;
@@ -12,10 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
 import javax.servlet.ServletContext;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
@@ -29,6 +33,7 @@ public class OptionServiceImpl implements OptionService {
     List<CallOptionVO>Calls=new ArrayList<CallOptionVO>();
     List<PutOptionVO>Puts=new ArrayList<PutOptionVO>();
     public double D=0.7;    //暂定阈值
+
     public OptionServiceImpl() throws FileNotFoundException {
         //参数是一个日期，用来确认需要拿哪一天的期权
         File path = new File(ResourceUtils.getURL("classpath:").getPath());
@@ -99,6 +104,39 @@ public class OptionServiceImpl implements OptionService {
         System.out.println(Puts.toString());
     }
 
+    public void TestConnection(){
+        //1.获得一个httpclient对象
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+
+        //2.生成一个get请求
+        HttpGet httpget = new HttpGet("http://127.0.0.1:5000/getListMock/date");
+        CloseableHttpResponse response = null;
+
+        try {
+            //3.执行get请求并返回结果
+            response = httpclient.execute(httpget);
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        String result = null;
+
+        try {
+            //4.处理结果，这里将结果返回为字符串
+            HttpEntity entity = response.getEntity();
+            if (entity != null) {
+                result = EntityUtils.toString(entity);
+            }
+            System.out.println(result);
+        } catch (ParseException | IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                response.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     @Override
     public ResponseVO purchaseCallOption(){
