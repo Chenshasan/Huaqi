@@ -141,7 +141,7 @@ public class OptionServiceImpl implements OptionService {
     @Override
     public ResponseVO purchaseCallOption(){
         for(int i=0;i<Calls.size();i++){
-            double timePrice=Math.max(Calls.get(i).getETFPrice()-Calls.get(i).getExecPrice(),0);
+            double timePrice=Math.max(Calls.get(i).getETFPrice()-Calls.get(i).getExecPrice(),0);//时间价值
             if(timePrice<0){
                 List<PutOptionVO>purchaseList=new ArrayList<>();//认购期权对应的认沽期权List
                 for(int j=0;j<Puts.size();j++){
@@ -155,14 +155,15 @@ public class OptionServiceImpl implements OptionService {
                 若当前delta值对应的期权数量不够，那么就取第二小的，以此类推
                  */
                 Collections.sort(purchaseList);
+                //如果挑出了对应的认购期权，而且最小的delta也达到暂定阈值D的要求，那么进行本次交易
+                if(purchaseList.size()!=0&&purchaseList.get(0).getDelta()<-0.7){
+                    int Call_num=0;    //认购购买的份数
+                    int Put_num=0;     //认沽购买的份数
+                    double Call_outprice=Calls.get(i).getAvg1_2();//买入挂价
+                    myThreads x=new myThreads(Calls.get(i),purchaseList,Call_outprice,Call_num,Put_num);
+                    x.start();
                 }
-
-//                if(Purchase.size()>=Calls.get(i).getDelta()){
-//                    调用认购期权与相应认沽期权的购买API
-//                    int outPrice=0;
-//                    myThreads x=new myThreads(Calls.get(i),Purchase,outPrice);
-//                    x.start();
-//                }
+                }
             }
 
         return ResponseVO.buildSuccess();
@@ -171,16 +172,20 @@ public class OptionServiceImpl implements OptionService {
     class myThreads extends Thread{
         CallOptionVO call;
         List<PutOptionVO> puts;
-        int outPrice;
+        double outPrice;
+        int Call_num;    //认购购买的份数
+        int Put_num;     //认沽购买的份数
 
-        public myThreads(CallOptionVO call,List<PutOptionVO> puts,int outPrice){
+        public myThreads(CallOptionVO call,List<PutOptionVO> puts,double outPrice,int Call_num,int Put_num){
             this.call=call;
             this.puts=puts;
             this.outPrice=outPrice;
+            this.Call_num=Call_num;
+            this.Put_num=Put_num;
         }
 
         public void run(){
-            Task task = new Task(call,puts,outPrice);
+            Task task = new Task(call,puts,outPrice,Call_num,Put_num);
             FutureTask<Integer> futureTask = new FutureTask<Integer>(task);
             Thread thread = new Thread(futureTask);
             thread.start();
@@ -197,17 +202,24 @@ public class OptionServiceImpl implements OptionService {
     class Task implements Callable<Integer> {
         CallOptionVO call;
         List<PutOptionVO> puts;
-        int outPrice;
+        double outPrice;
+        int Call_num;    //认购购买的份数
+        int Put_num;     //认沽购买的份数
 
-        public Task(CallOptionVO call,List<PutOptionVO> puts,int outPrice){
-            this.call=call;
+        public Task(CallOptionVO call,List<PutOptionVO> puts,double outPrice,int Call_num,int Put_num){
+            this.call=call;//要购买的认沽期权
+            /*
+            这里的认沽期权是一个List是因为delta最小值的期权份数可能不够，就需要用delta第二小的期权来补足这个份数，以此类推
+             */
             this.puts=puts;
             this.outPrice=outPrice;
+            this.Call_num=Call_num;
+            this.Put_num=Put_num;
         }
 
         @Override
         public Integer call() throws Exception {
-            //调用写入api
+            //调用买入api，写入买入期权和购买数量
             return 0;
         }
     }
