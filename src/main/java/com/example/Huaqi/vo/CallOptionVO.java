@@ -12,6 +12,16 @@ public class CallOptionVO implements Comparable<CallOptionVO>{
     Date time;
     double delta;//delta值
     double avg1_2;//买一买二平均值
+
+    public int getNum() {
+        return num;
+    }
+
+    public void setNum(int num) {
+        this.num = num;
+    }
+
+    int num;
     public String getName() {
         return name;
     }
