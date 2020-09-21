@@ -23,6 +23,25 @@ if __name__ == '__main__':
     "expiredate": 7,
     "settle_method": "实物资产",
     "multiplier": 10000.0,
+    },
+      {
+        "code": "1",
+        "us_code": "510050.SH",
+        "us_name": "华夏上证50ETF",
+        "option_var": "510050OP.SH",
+        "option_code": "10002423.SH",
+        "option_name": "50ETF购9月2.35",
+        "exe_type": "欧式",
+        "strike_price": 2.35,
+        "month": 202009,
+        "call_put": "认购",
+        "first_tradedate": "2020-03-20",
+        "last_tradedate": "2020-09-23",
+        "expiredate": 7,
+        "settle_method": "实物资产",
+        "multiplier": 10000.0,
+        }
+
     "curr_status": {
       "RT_BID1": 0.9852000000000001,
       "RT_BID2": 0.9669000000000001,

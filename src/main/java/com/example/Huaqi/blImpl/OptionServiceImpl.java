@@ -8,8 +8,12 @@ import org.apache.http.HttpEntity;
 import org.apache.http.ParseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -35,47 +39,34 @@ public class OptionServiceImpl implements OptionService {
     public double D=0.7;    //暂定阈值
 
     public OptionServiceImpl() throws FileNotFoundException {
-        //参数是一个日期，用来确认需要拿哪一天的期权
-        File path = new File(ResourceUtils.getURL("classpath:").getPath());
-        if(!path.exists()) path = new File("");
-        String p=path.getAbsolutePath();
-        p=p.substring(0,p.length()-20);
-        p=p+"\\src\\main\\java\\com\\example\\Huaqi\\blImpl\\testMock.py";
-        System.out.println("path:"+p);
-        String[] arguments = new String[] {"python", p,"2020-09-16"};
-        String Json="";
-        try {
-            Process process = Runtime.getRuntime().exec(arguments);//调用python
-            BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream(),"GBK"));
-            //数据都在in里面
-            String line = null;
-            while ((line = in.readLine()) != null) {
-                Json=Json+line;
-            }
-            in.close();
-            System.out.println(Json);
-            //java代码中的process.waitFor()返回值为0表示我们调用python脚本成功，
-            //返回值为1表示调用python脚本失败，这和我们通常意义上见到的0与1定义正好相反
-//            int re = process.waitFor();
-//            System.out.println(re);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Connection("http://127.0.0.1:5000/loginWind");
+        String result1=Connection("http://127.0.0.1:5000/getList/510050.SH/20200923");
 
-        JSONArray array=new JSONArray(Json);
+
+        //解析返回的query_str\query_info\query_list
+        JSONObject startObj=new JSONObject(result1);
+        String query_str=startObj.getString("query_str");
+        JSONArray array=startObj.getJSONArray("query_info");
+
+        String result2=Connection("http://127.0.0.1:5000/getList/"+query_str);
+        JSONObject startObj1=new JSONObject(result2);
+        JSONArray array1=startObj1.getJSONArray("status_res");
+
         for(int i=0;i<array.length();i++) {
             try {
                 JSONObject obj = array.getJSONObject(i);
-                String us_code = obj.getString("us_code");//唯一标识符
+                String us_code = obj.getString("option_code");//唯一标识符
                 double strike_price = obj.getDouble("strike_price");//行权价
 
-                JSONObject inObject = obj.getJSONObject("curr_status");
+                JSONObject obj1=array1.getJSONObject(i);
+                JSONObject inObject = obj1.getJSONObject("curr_status");
                 double RT_BID1 = inObject.getDouble("RT_BID1");
                 double RT_BID2=inObject.getDouble("RT_BID2");
                 double price=inObject.getDouble("RT_LAST");//期权价格
                 double ETF50price=inObject.getDouble("RT_USTOCK_PRICE");//50ETF价格
                 double avg1_2=(RT_BID1+RT_BID2)/2.0;//买一买二平均值
                 double thedelta=inObject.getDouble("RT_DELTA");//delta值
+
                 if(obj.getString("call_put").equals("认购")){
                     CallOptionVO callOptionVO=new CallOptionVO();
                     callOptionVO.setOptioncode(us_code);
@@ -104,12 +95,12 @@ public class OptionServiceImpl implements OptionService {
         System.out.println(Puts.toString());
     }
 
-    public void TestConnection(){
+    public String Connection(String url){
         //1.获得一个httpclient对象
         CloseableHttpClient httpclient = HttpClients.createDefault();
 
         //2.生成一个get请求
-        HttpGet httpget = new HttpGet("http://127.0.0.1:5000//loginWind");
+        HttpGet httpget = new HttpGet(url);
         CloseableHttpResponse response = null;
 
         try {
@@ -136,6 +127,43 @@ public class OptionServiceImpl implements OptionService {
                 e.printStackTrace();
             }
         }
+        return result;
+    }
+
+    public String postConnection(String url, String jsonString){
+        //1.获得一个httpclient对象
+        CloseableHttpResponse response = null;
+        CloseableHttpClient httpClient = HttpClientBuilder.create().build();//创建CloseableHttpClient
+        HttpPost httpPost = new HttpPost(url);//实现HttpPost
+        httpPost.addHeader("Content-Type", "application/json");//设置httpPost的请求头中的MIME类型为json
+        StringEntity requestEntity = new StringEntity(jsonString, "utf-8");
+        httpPost.setEntity(requestEntity);//设置请求体
+
+        try {
+            //3.执行get请求并返回结果
+            response = httpClient.execute(httpPost, new BasicHttpContext());//执行请求返回结果
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        String result = null;
+
+        try {
+            //4.处理结果，这里将结果返回为字符串
+            HttpEntity entity = response.getEntity();
+            if (entity != null) {
+                result = EntityUtils.toString(entity);
+            }
+            System.out.println(result);
+        } catch (ParseException | IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                response.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
     }
 
     @Override
@@ -146,7 +174,7 @@ public class OptionServiceImpl implements OptionService {
                 List<PutOptionVO>purchaseList=new ArrayList<>();//认购期权对应的认沽期权List
                 //认购期权对应的认沽期权，且这些期权是满足条件-1<delta<阈值的认沽期权
                 for(int j=0;j<Puts.size();j++) {
-                    if ((Calls.get(i).getOptioncode().equals(Puts.get(j).getOptioncode())) && (-1 < Puts.get(j).getDelta() && Puts.get(j).getDelta() < D)) {
+                    if ((-1 < Puts.get(j).getDelta() && Puts.get(j).getDelta() < D)) {
                         purchaseList.add(Puts.get(i));
                     }
                 }
@@ -257,15 +285,39 @@ public class OptionServiceImpl implements OptionService {
         @Override
         public Integer call() throws Exception {
             //调用具体的购买API
-            /*
-            这里的认沽期权及其购买的份数都是List
-            调用API的时候用for循环分别购买List的每一个
-            for(int i=0;i<Put.size();i++){
-                int every_num=Put_num.get(i);
-                PutOptionVO p=Put.get(i);//期权
-            }
-             */
+            String param1="{\n" +
+                    "\"securityCode\": \""+Call.getOptioncode()+"\",\n" +
+                    "\"tradeSide\": \"Buy\",\n" +
+                    "\"orderPrice\": \""+Call.getAvg1_2()+"\",\n" +
+                    "\"orderVolume\": \""+Call.getNum()+"\",\n" +
+                    "\n" +
+                    "\"options\": {\n" +
+                    "\"OrderType\": \"LMT\",\n" +
+                    "\"HedgeType\": \"SPEC\"\n" +
+                    "}\n" +
+                    "}";
 
+            postConnection("http://127.0.0.1:5000/trade/torder",param1);
+
+
+            for(int i=0;i<Put.size();i++) {
+                int every_num = Put_num.get(i);
+                PutOptionVO p = Put.get(i);//期权
+
+                String param="{\n" +
+                        "\"securityCode\": \""+p.getOptioncode()+"\",\n" +
+                        "\"tradeSide\": \"Buy\",\n" +
+                        "\"orderPrice\": \""+p.getAvg1_2()+"\",\n" +
+                        "\"orderVolume\": \""+p.getNum()+"\",\n" +
+                        "\n" +
+                        "\"options\": {\n" +
+                        "\"OrderType\": \"LMT\",\n" +
+                        "\"HedgeType\": \"SPEC\"\n" +
+                        "}\n" +
+                        "}";
+
+                postConnection("http://127.0.0.1:5000/trade/torder",param);
+            }
             return 0;
         }
     }
@@ -274,15 +326,24 @@ public class OptionServiceImpl implements OptionService {
     @Override
     public ResponseVO purchasePutOption(){
         List<PutOptionVO>Puts=new ArrayList<PutOptionVO>();
-        int m=0;//买入认沽期权的数量
+        int m=1;//买入认沽期权的数量
         for(int i=0;i<Puts.size();i++){
             double timePrice=Math.max(Puts.get(i).getExecPrice()-Puts.get(i).getETFPrice(),0);
             if(timePrice<0){
                 int n=m*10000;//对应应该买入50ETF的数量
-                int outprice=0;//挂价
-                /*
-                TODO 调用买入认沽期权和50ETF的API
-                 */
+                String param="{\n" +
+                        "\"securityCode\": \""+Puts.get(i).getOptioncode()+"\",\n" +
+                        "\"tradeSide\": \"Buy\",\n" +
+                        "\"orderPrice\": \""+Puts.get(i).getAvg1_2()+"\",\n" +
+                        "\"orderVolume\": \""+Puts.get(i).getNum()+"\",\n" +
+                        "\n" +
+                        "\"options\": {\n" +
+                        "\"OrderType\": \"LMT\",\n" +
+                        "\"HedgeType\": \"SPEC\"\n" +
+                        "}\n" +
+                        "}";
+
+                postConnection("http://127.0.0.1:5000/trade/torder",param);
             }
         }
         return ResponseVO.buildSuccess();

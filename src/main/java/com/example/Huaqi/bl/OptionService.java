@@ -16,5 +16,5 @@ public interface OptionService {
      */
     ResponseVO purchasePutOption();
 
-    void TestConnection();
+    String Connection(String url);
 }
