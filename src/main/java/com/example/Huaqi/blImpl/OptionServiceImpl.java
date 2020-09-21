@@ -109,7 +109,7 @@ public class OptionServiceImpl implements OptionService {
         CloseableHttpClient httpclient = HttpClients.createDefault();
 
         //2.生成一个get请求
-        HttpGet httpget = new HttpGet("http://127.0.0.1:5000/getListMock/date");
+        HttpGet httpget = new HttpGet("http://127.0.0.1:5000//loginWind");
         CloseableHttpResponse response = null;
 
         try {
