@@ -144,63 +144,61 @@ public class OptionServiceImpl implements OptionService {
             double timePrice=Math.max(Calls.get(i).getETFPrice()-Calls.get(i).getExecPrice(),0);//时间价值
             if(timePrice<0){
                 List<PutOptionVO>purchaseList=new ArrayList<>();//认购期权对应的认沽期权List
-                for(int j=0;j<Puts.size();j++){
-                    if(Calls.get(i).getOptioncode().equals(Puts.get(j).getOptioncode())){
+                //认购期权对应的认沽期权，且这些期权是满足条件-1<delta<阈值的认沽期权
+                for(int j=0;j<Puts.size();j++) {
+                    if ((Calls.get(i).getOptioncode().equals(Puts.get(j).getOptioncode())) && (-1 < Puts.get(j).getDelta() && Puts.get(j).getDelta() < D)) {
                         purchaseList.add(Puts.get(i));
-                        }
                     }
+                }
                 /*
                 对于时间价值为负的认购期权，挑出它对应的认沽期权并按delta的升序排序
                 这样就能顺序从List中取出delta值尽可能小的期权购买
                 若当前delta值对应的期权数量不够，那么就取第二小的，以此类推
                  */
                 Collections.sort(purchaseList);
-                //如果挑出了对应的认购期权，而且最小的delta也达到暂定阈值D的要求，那么进行本次交易
-                if(purchaseList.size()!=0&&purchaseList.get(0).getDelta()<D){
-                    int Call_num=0;    //认购购买的份数
-                    int Put_num=0;     //认沽购买的份数
-                    double Call_outprice=Calls.get(i).getAvg1_2();//认购期权买入挂价
-                    double Put_outPrice=0;//认沽期权买入挂架
+                //如果有满足条件的认沽期权
+                if(purchaseList.size()!=0) {
+                    List<PutOptionVO> true_purchaseList = new ArrayList<>();//要购买的认沽期权List
+                    List<Integer> Put_num = new ArrayList<>();//要购买的认沽期权份数对应的List,这里的数和对应的认沽期权List一一对应
+                    List<Double> Put_outPrice = new ArrayList<>();//认沽期权买入的挂价List,同上
+                    int Call_num = 0;    //认购购买的份数
+                    double Call_outprice = Calls.get(i).getAvg1_2();//认购期权买入挂价
 
-                    //挑选出符合的认沽期权
-                    boolean haveOne=false;//能否挑选出合适的认沽期权，如果最终不能挑选出，则判断下一个认购期权；如果能，则调用买入API
-                    int index=0;//挑选出的认沽期权在purchaseList中的index
-                    int m=1;//合适的m值
-                    for(int k=0;k<purchaseList.size();k++){
-                        //如果此时该阈值已经不满足了，后续的delta一定比当前delta大（大于-0.7），因此直接淘汰掉该认购期权
-                        if(!(-1<purchaseList.get(k).getDelta()&&purchaseList.get(k).getDelta()<-0.7)){
+                    int index = 0;//挑选出的认沽期权在purchaseList中的index
+                    int m = 1;//合适的m值
+                    //选出合适的m
+                    while (true) {
+                        //将m从1开始++1，如果有m能够满足-1*m/delta接近整数并且误差小于0.1时，则选择该m
+                        double judge = -1 * m / purchaseList.get(0).getDelta();
+                        if (judge - Math.floor(judge) < 0.1 || Math.ceil(judge) - judge < 0.1) {
                             break;
                         }
-
-                        //选出合适的m
-                        m=1;
-                        while(true){
-                            //将m从1开始++1，如果有m能够满足-1*m/delta接近整数并且误差小于0.1时，则选择该m
-                            double judge=-1*m/purchaseList.get(k).getDelta();
-                            if(judge-Math.floor(judge)<0.1||Math.ceil(judge)-judge<0.1){
+                        m++;
+                    }
+                    int count = 0;//purchaseList里面认沽期权的总份数
+                    int put_count = (int) Math.round(-1 * m / purchaseList.get(0).getDelta());//购买认沽期权的份数
+                    for (int p = 0; p < purchaseList.size(); p++) {
+                        count = count + purchaseList.get(p).getNum();
+                    }
+                    //判断如果总份数都不能满足需要购买的量，满足了才继续
+                    if (count > put_count) {
+                        int the_count = 0;
+                        int the_index = 0;
+                        //这里填充要买的认沽期权的true_purchaseList和对应每个认沽期权购买份数的List
+                        while (true) {
+                            true_purchaseList.add(purchaseList.get(the_index));
+                            the_count = the_count + purchaseList.get(the_index).getNum();
+                            if (the_count <= put_count) {
+                                Put_num.add(purchaseList.get(the_index).getNum());
+                                the_index++;
+                            } else {
+                                Put_num.add(purchaseList.get(the_index).getNum() - (the_count - put_count));
                                 break;
                             }
-                            m++;
                         }
-
-                        //选出m后，看此时的认购期权是否有m份，认沽期权是否有-1*m/delta份，如果有则进行购买并且调出循环
-                        if(m<Calls.get(i).getNum()&&Math.round(-1*m/purchaseList.get(k).getDelta())<purchaseList.get(k).getNum()){
-                            index=k;
-                            haveOne=true;
-                            Call_num=m;
-                            Put_num=(int)(Math.round(-1*m/purchaseList.get(k).getDelta()));
-                            Put_outPrice=Puts.get(k).getAvg1_2();
-                            break;
-                        }
+                        myThreads x = new myThreads(Calls.get(i), true_purchaseList, Call_num, Put_num);
+                        x.start();
                     }
-
-                    //如果所有认沽期权都不符合，则直接跳过该认购期权
-                    if(haveOne=false){
-                        continue;
-                    }
-
-                    myThreads x=new myThreads(Calls.get(i),purchaseList.get(index),Call_outprice,Put_outPrice,Call_num,Put_num);
-                    x.start();
                 }
             }
         }
@@ -208,24 +206,24 @@ public class OptionServiceImpl implements OptionService {
     }
 
     class myThreads extends Thread{
-        CallOptionVO call;
-        PutOptionVO puts;
-        double Call_outprice;
-        double Put_outPrice;
+        CallOptionVO Call;
+        //double Call_outprice;
         int Call_num;    //认购购买的份数
-        int Put_num;     //认沽购买的份数
+        List<PutOptionVO>Put;
+        //List<Double>Put_outPrice;
+        List<Integer>Put_num;
 
-        public myThreads(CallOptionVO call,PutOptionVO puts,double Call_outprice,double Put_outPrice,int Call_num,int Put_num){
-            this.call=call;
-            this.puts=puts;
-            this.Call_outprice=Call_outprice;
-            this.Put_outPrice=Put_outPrice;
+        public myThreads(CallOptionVO call,List<PutOptionVO>put,int Call_num,List<Integer>Put_num){
+            this.Call=call;
+            this.Put=put;
+            //this.Call_outprice=Call_outprice;
+            //this.Put_outPrice=Put_outPrice;
             this.Call_num=Call_num;
             this.Put_num=Put_num;
         }
 
         public void run(){
-            Task task = new Task(call,puts,Call_outprice,Put_outPrice,Call_num,Put_num);
+            Task task = new Task(Call,Put,Call_num,Put_num);
             FutureTask<Integer> futureTask = new FutureTask<Integer>(task);
             Thread thread = new Thread(futureTask);
             thread.start();
@@ -240,18 +238,18 @@ public class OptionServiceImpl implements OptionService {
     }
 
     class Task implements Callable<Integer> {
-        CallOptionVO call;
-        PutOptionVO puts;
-        double Call_outprice;
-        double Put_outPrice;
+        CallOptionVO Call;
+        //double Call_outprice;
         int Call_num;    //认购购买的份数
-        int Put_num;     //认沽购买的份数
+        List<PutOptionVO>Put;
+        //List<Double>Put_outPrice;
+        List<Integer>Put_num;
 
-        public Task(CallOptionVO call,PutOptionVO puts,double Call_outprice,double Put_outPrice,int Call_num,int Put_num){
-            this.call=call;//要购买的认沽期权
-            this.puts=puts;
-            this.Call_outprice=Call_outprice;
-            this.Put_outPrice=Put_outPrice;
+        public Task(CallOptionVO call,List<PutOptionVO>put,int Call_num,List<Integer>Put_num){
+            this.Call=call;//要购买的认沽期权
+            this.Put=put;
+            //this.Call_outprice=Call_outprice;
+            //this.Put_outPrice=Put_outPrice;
             this.Call_num=Call_num;
             this.Put_num=Put_num;
         }
@@ -259,6 +257,15 @@ public class OptionServiceImpl implements OptionService {
         @Override
         public Integer call() throws Exception {
             //调用具体的购买API
+            /*
+            这里的认沽期权及其购买的份数都是List
+            调用API的时候用for循环分别购买List的每一个
+            for(int i=0;i<Put.size();i++){
+                int every_num=Put_num.get(i);
+                PutOptionVO p=Put.get(i);//期权
+            }
+             */
+
             return 0;
         }
     }
