@@ -159,27 +159,31 @@ public class OptionServiceImpl implements OptionService {
                 if(purchaseList.size()!=0&&purchaseList.get(0).getDelta()<D){
                     int Call_num=0;    //认购购买的份数
                     int Put_num=0;     //认沽购买的份数
-                    double Call_outprice=Calls.get(i).getAvg1_2();//买入挂价
-                    double Put_outPrice=0;
+                    double Call_outprice=Calls.get(i).getAvg1_2();//认购期权买入挂价
+                    double Put_outPrice=0;//认沽期权买入挂架
 
                     //挑选出符合的认沽期权
-                    boolean haveOne=false;
-                    int index=0;
-                    int m=1;
+                    boolean haveOne=false;//能否挑选出合适的认沽期权，如果最终不能挑选出，则判断下一个认购期权；如果能，则调用买入API
+                    int index=0;//挑选出的认沽期权在purchaseList中的index
+                    int m=1;//合适的m值
                     for(int k=0;k<purchaseList.size();k++){
+                        //如果此时该阈值已经不满足了，后续的delta一定比当前delta大（大于-0.7），因此直接淘汰掉该认购期权
                         if(!(-1<purchaseList.get(k).getDelta()&&purchaseList.get(k).getDelta()<-0.7)){
                             break;
                         }
+
                         //选出合适的m
                         m=1;
                         while(true){
+                            //将m从1开始++1，如果有m能够满足-1*m/delta接近整数并且误差小于0.1时，则选择该m
                             double judge=-1*m/purchaseList.get(k).getDelta();
                             if(judge-Math.floor(judge)<0.1||Math.ceil(judge)-judge<0.1){
                                 break;
                             }
                             m++;
                         }
-                        //判断delta符不符合
+
+                        //选出m后，看此时的认购期权是否有m份，认沽期权是否有-1*m/delta份，如果有则进行购买并且调出循环
                         if(m<Calls.get(i).getNum()&&Math.round(-1*m/purchaseList.get(k).getDelta())<purchaseList.get(k).getNum()){
                             index=k;
                             haveOne=true;
@@ -190,9 +194,9 @@ public class OptionServiceImpl implements OptionService {
                         }
                     }
 
-                    //如果所有认沽期权都不符合，则直接跳过
+                    //如果所有认沽期权都不符合，则直接跳过该认购期权
                     if(haveOne=false){
-                        break;
+                        continue;
                     }
 
                     myThreads x=new myThreads(Calls.get(i),purchaseList.get(index),Call_outprice,Put_outPrice,Call_num,Put_num);
