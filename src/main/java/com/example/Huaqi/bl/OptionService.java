@@ -29,4 +29,10 @@ public interface OptionService {
      * @return
      */
     ResponseVO getListRegularly();
+
+    String postConnection(String url, String jsonString);
+
+    int logon();
+
+    void logout(int logonId);
 }

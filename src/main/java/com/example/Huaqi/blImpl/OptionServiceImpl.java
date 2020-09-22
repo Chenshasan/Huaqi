@@ -244,8 +244,37 @@ public class OptionServiceImpl implements OptionService {
                     "}";
 
             postConnection("http://127.0.0.1:5000/trade/torder",param1);
+            //postConnection("http://114.212.242.163:5000/trade/torder",param1);
 
-            //TO DO 如果十秒之后交易没有成功（查询交易状态），则进行撤销委托的API调用
+            //TODO 如果十秒之后交易没有成功（查询交易状态），则进行撤销委托的API调用
+            try{
+                Thread.currentThread().sleep(10000);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            int logonId = logon();
+            String param2 = "{\n"+
+                    "\"queryType\":\""+"Order\",\n" +
+                    "\"options\":{\n" +
+                    "\"LogonID\":\"" + logonId + "\"" +
+                    "}\n" +
+                    "}";
+            String res2 = postConnection("http://114.212.242.163:5000/trade/tquery",param2);
+            JSONObject jsonObject0 = new JSONObject(res2);
+            JSONArray jsonArray = jsonObject0.getJSONArray("data");
+            JSONObject jsonObject = new JSONObject((String) jsonArray.get(0));
+            String orderStatus = jsonObject.getString("OrderStatus");
+            System.out.println(orderStatus);
+            int orderNum = jsonObject.getInt("OrderNumber");
+            System.out.println(orderNum);
+            if(orderStatus.equals("Invalid")){
+                String param3 = "\"{\n"+
+                        "\"OrderNumber\":\"" + orderNum + "\"\n" +
+                        "}";
+                postConnection("http://127.0.0.1:5000/trade/tcancel",param3);
+            }
+            logout(logonId);
+
             for(int i=0;i<Put.size();i++) {
                 int every_num = Put_num.get(i);
                 PutOptionVO p = Put.get(i);//期权
@@ -367,6 +396,29 @@ public class OptionServiceImpl implements OptionService {
         System.out.println(Calls.toString());
         System.out.println(Puts.toString());
         return ResponseVO.buildSuccess();
+    }
+
+    public int logon(){
+        String param = "{\n" +
+                "\"brokerId\": \"0000\",\n" +
+                "\"departmentId\": \"0\",\n" +
+                "\"logonAccount\": \"W5814909233703\",\n" +
+                "\"password\": \"000\",\n" +
+                "\"accountType\": \"SHO\"\n" +
+                "}";
+        String res = postConnection("http://114.212.242.163:5000/trade/tlogon",param);
+        JSONObject jsonObject = new JSONObject(res);
+        String list = jsonObject.getString("data");
+        int logonId = Integer.parseInt(list.substring(1,list.length()-1));
+        return logonId;
+    }
+
+    public void logout(int logonId){
+        String param = "{\n" +
+                "\"logonId\": \"" + logonId + "\"\n" +
+                "}";
+        String res = postConnection("http://114.212.242.163:5000/trade/tlogout",param);
+        System.out.println(res);
     }
 
 }
