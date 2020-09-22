@@ -140,7 +140,7 @@ public class OptionServiceImpl implements OptionService {
                     List<Double> Put_outPrice = new ArrayList<>();//认沽期权买入的挂价List,同上
                     double Call_outprice = Calls.get(i).getAvg1_2();//认购期权买入挂价
 
-                    double Sum_money;//当前购买认购加认沽期权需要的总资金数；
+                    double Sum_money;//当前购买认购以及行权和认沽期权需要的总资金数；
 
                     int index = 0;//挑选出的认沽期权在purchaseList中的index
                     int m = 1;//合适的m值
@@ -168,22 +168,23 @@ public class OptionServiceImpl implements OptionService {
                         while (true) {
                             true_purchaseList.add(purchaseList.get(the_index));
                             the_count = the_count + purchaseList.get(the_index).getNum();
-                            if (the_count <= put_count) {
+                            if (the_count < put_count) {
                                 Put_num.add(purchaseList.get(the_index).getNum());
                                 //认沽总价要加上当前认沽的价格
-                                put_money=put_money+purchaseList.get(the_index).getAvg1_2()*purchaseList.get(the_index).getNum();
+                                put_money=put_money+purchaseList.get(the_index).getPrice()*purchaseList.get(the_index).getNum();
                                 the_index++;
                             } else {
                                 Put_num.add(purchaseList.get(the_index).getNum() - (the_count - put_count));
                                 //认沽总价要加上当前认沽的价格
-                                put_money=put_money+purchaseList.get(the_index).getAvg1_2()*(purchaseList.get(the_index).getNum() - (the_count - put_count));
+                                put_money=put_money+purchaseList.get(the_index).getPrice()*(purchaseList.get(the_index).getNum() - (the_count - put_count));
                                 break;
                             }
                         }
                         //如果当前剩余资金足够那么就购买
-                        if(RemainingFund>=put_money+Calls.get(i).getAvg1_2()*Call_num){
-                        myThreads x = new myThreads(Calls.get(i), true_purchaseList, Call_num, Put_num);
-                        x.start();
+                        //需要的资金是认沽期权的价格加上认购期权的价格以及购买50ETF的价格
+                        Sum_money=put_money+Calls.get(i).getPrice()*Call_num+Calls.get(i).getETFNum()*Calls.get(i).getExecPrice();
+                        if(RemainingFund>=Sum_money){
+                        myThreads x = new myThreads(Calls.get(i), true_purchaseList, Call_num, Put_num,Sum_money);
                         }
                     }
                 }
@@ -199,18 +200,20 @@ public class OptionServiceImpl implements OptionService {
         List<PutOptionVO>Put;
         //List<Double>Put_outPrice;
         List<Integer>Put_num;
+        double Sum_money;//这一次交易所需要的全部资金，以便成功交易减去资金或者撤销的时候我们账户的剩余资金能恢复
 
-        public myThreads(CallOptionVO call,List<PutOptionVO>put,int Call_num,List<Integer>Put_num){
+        public myThreads(CallOptionVO call,List<PutOptionVO>put,int Call_num,List<Integer>Put_num,double Sum_money){
             this.Call=call;
             this.Put=put;
             //this.Call_outprice=Call_outprice;
             //this.Put_outPrice=Put_outPrice;
             this.Call_num=Call_num;
             this.Put_num=Put_num;
+            this.Sum_money=Sum_money;
         }
 
         public void run(){
-            Task task = new Task(Call,Put,Call_num,Put_num);
+            Task task = new Task(Call,Put,Call_num,Put_num,Sum_money);
             FutureTask<Integer> futureTask = new FutureTask<Integer>(task);
             Thread thread = new Thread(futureTask);
             thread.start();
@@ -231,14 +234,16 @@ public class OptionServiceImpl implements OptionService {
         List<PutOptionVO>Put;
         //List<Double>Put_outPrice;
         List<Integer>Put_num;
+        double Sum_money;//这一次交易所需要的全部资金，以便成功交易减去资金或者撤销的时候我们账户的剩余资金能恢复
 
-        public Task(CallOptionVO call,List<PutOptionVO>put,int Call_num,List<Integer>Put_num){
+        public Task(CallOptionVO call,List<PutOptionVO>put,int Call_num,List<Integer>Put_num,double Sum_money){
             this.Call=call;//要购买的认沽期权
             this.Put=put;
             //this.Call_outprice=Call_outprice;
             //this.Put_outPrice=Put_outPrice;
             this.Call_num=Call_num;
             this.Put_num=Put_num;
+            this.Sum_money=Sum_money;
         }
 
         @Override
@@ -299,11 +304,15 @@ public class OptionServiceImpl implements OptionService {
             System.out.println(orderStatus);
             int orderNum = jsonObject.getInt("OrderNumber");
             System.out.println(orderNum);
+            //交易后我们的剩余资金要减去这次交易所需要的总的资金
+            RemainingFund=RemainingFund-Sum_money;
             if(!orderStatus.equals("Normal")){
                 String param3 = "\"{\n"+
                         "\"OrderNumber\":\"" + orderNum + "\"\n" +
                         "}";
                 postConnection("http://127.0.0.1:5000/trade/tcancel",param3);
+                //撤销以后我们剩余的资金要进行恢复
+                RemainingFund=RemainingFund+Sum_money;
             }
             logout(logonId);
             return 0;
