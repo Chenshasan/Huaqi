@@ -299,7 +299,7 @@ public class OptionServiceImpl implements OptionService {
             System.out.println(orderStatus);
             int orderNum = jsonObject.getInt("OrderNumber");
             System.out.println(orderNum);
-            if(orderStatus.equals("Invalid")){
+            if(!orderStatus.equals("Normal")){
                 String param3 = "\"{\n"+
                         "\"OrderNumber\":\"" + orderNum + "\"\n" +
                         "}";
