@@ -13,11 +13,6 @@ public class OptionServiceTest extends HuaqiApplicationTests{
     private OptionService optionService;
 
     @Test
-    public void testPurchaseCallOption(){
-        optionService.login();
-    }
-
-    @Test
     public void testLogon(){
         int res = optionService.logon();
         System.out.println(res);

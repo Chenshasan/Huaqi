@@ -17,13 +17,6 @@ public interface OptionService {
     ResponseVO purchasePutOption();
 
     /**
-     * 登录进入wind账户
-     * @param
-     * @return
-     */
-    ResponseVO login();
-
-    /**
      * 周期性获取数据
      * @param
      * @return
@@ -32,7 +25,17 @@ public interface OptionService {
 
     String postConnection(String url, String jsonString);
 
+    /**
+     * 登录
+     * @param
+     * @return
+     */
     int logon();
 
+    /**
+     * 登出
+     * @param
+     * @return
+     */
     void logout(int logonId);
 }
