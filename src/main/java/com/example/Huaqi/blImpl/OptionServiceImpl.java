@@ -116,9 +116,10 @@ public class OptionServiceImpl implements OptionService {
 
     @Override
     public ResponseVO purchaseCallOption(){
+        Collections.sort(Calls);//将时间价值按升序排列，以便购买的时候从时间价值最小的期权开始
         for(int i=0;i<Calls.size();i++){
-            double timePrice=Math.max(Calls.get(i).getETFPrice()-Calls.get(i).getExecPrice(),0);//时间价值
-            if(timePrice<0){
+           // 时间价值小于0准备购买
+            if(Calls.get(i).getTimeprice()<0){
                 List<PutOptionVO>purchaseList=new ArrayList<>();//认购期权对应的认沽期权List
                 //认购期权对应的认沽期权，且这些期权是满足条件-1<delta<阈值的认沽期权
                 for(int j=0;j<Puts.size();j++) {
@@ -374,6 +375,8 @@ public class OptionServiceImpl implements OptionService {
                     callOptionVO.setETFPrice(ETF50price);
                     callOptionVO.setDelta(thedelta);
                     callOptionVO.setAvg1_2(avg1_2);
+                    double timePrice=Math.max(callOptionVO.getETFPrice()-callOptionVO.getExecPrice(),0);//时间价值
+                    callOptionVO.setTimeprice(timePrice);
                     Calls.add(callOptionVO);
                 }
                 if(obj.getString("call_put").equals("认沽")){

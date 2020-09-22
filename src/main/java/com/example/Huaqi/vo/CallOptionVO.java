@@ -13,6 +13,8 @@ public class CallOptionVO implements Comparable<CallOptionVO>{
     double delta;//delta值
     double avg1_2;//买一买二平均值
 
+    double timeprice;//时间价值
+
     public int getNum() {
         return num;
     }
@@ -90,10 +92,19 @@ public class CallOptionVO implements Comparable<CallOptionVO>{
         this.avg1_2 = avg1_2;
     }
 
-    //把List按delta值的升序排列，能顺序向上取到
+    public double getTimeprice() {
+        return timeprice;
+    }
+
+    public void setTimeprice(double timeprice) {
+        this.timeprice = timeprice;
+    }
+
+    //把List按时间价值的升序排列，能顺序向上取到
     @Override
     public int compareTo(CallOptionVO callOptionVO){
-        if(this.getDelta()-callOptionVO.getDelta()>=0){
+
+        if(this.getTimeprice()-callOptionVO.getTimeprice()>=0){
             return 1;
         }else {
             return -1;
