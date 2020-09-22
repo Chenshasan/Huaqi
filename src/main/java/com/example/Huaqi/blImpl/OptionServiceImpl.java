@@ -258,24 +258,6 @@ public class OptionServiceImpl implements OptionService {
 
             postConnection("http://127.0.0.1:5000/trade/torder",param1);
 
-            for(int i=0;i<Put.size();i++) {
-                int every_num = Put_num.get(i);
-                PutOptionVO p = Put.get(i);//期权
-
-                String param="{\n" +
-                        "\"securityCode\": \""+p.getOptioncode()+"\",\n" +
-                        "\"tradeSide\": \"Buy\",\n" +
-                        "\"orderPrice\": \""+p.getAvg1_2()+"\",\n" +
-                        "\"orderVolume\": \""+every_num+"\",\n" +
-                        "\n" +
-                        "\"options\": {\n" +
-                        "\"OrderType\": \"LMT\",\n" +
-                        "\"HedgeType\": \"SPEC\"\n" +
-                        "}\n" +
-                        "}";
-
-                postConnection("http://127.0.0.1:5000/trade/torder",param);
-            }
             //postConnection("http://114.212.242.163:5000/trade/torder",param1);
 
             //如果十秒之后交易没有成功（查询交易状态），则进行撤销委托的API调用
@@ -306,6 +288,25 @@ public class OptionServiceImpl implements OptionService {
                 postConnection("http://127.0.0.1:5000/trade/tcancel",param3);
             }
             logout(logonId);
+
+            for(int i=0;i<Put.size();i++) {
+                int every_num = Put_num.get(i);
+                PutOptionVO p = Put.get(i);//期权
+
+                String param="{\n" +
+                        "\"securityCode\": \""+p.getOptioncode()+"\",\n" +
+                        "\"tradeSide\": \"Buy\",\n" +
+                        "\"orderPrice\": \""+p.getAvg1_2()+"\",\n" +
+                        "\"orderVolume\": \""+every_num+"\",\n" +
+                        "\n" +
+                        "\"options\": {\n" +
+                        "\"OrderType\": \"LMT\",\n" +
+                        "\"HedgeType\": \"SPEC\"\n" +
+                        "}\n" +
+                        "}";
+
+                postConnection("http://127.0.0.1:5000/trade/torder",param);
+            }
             return 0;
         }
     }
@@ -357,6 +358,7 @@ public class OptionServiceImpl implements OptionService {
                 JSONObject obj = array.getJSONObject(i);
                 String option_code = obj.getString("option_code");//唯一标识符
                 double strike_price = obj.getDouble("strike_price");//行权价
+                int multiplier=obj.getInt("multiplier");//50ETF数量
 
                 JSONObject obj1=array1.getJSONObject(option_code);
                 JSONObject inObject = obj1.getJSONObject("curr_status");
@@ -366,6 +368,7 @@ public class OptionServiceImpl implements OptionService {
                 double ETF50price=inObject.getDouble("RT_USTOCK_PRICE");//50ETF价格
                 double avg1_2=(RT_ASK1+RT_ASK2)/2.0;//买一买二平均值
                 double thedelta=inObject.getDouble("RT_DELTA");//delta值
+                int RT_LAST_AMT=inObject.getInt("RT_LAST_AMT");//50ETF的行权量
 
                 if(obj.getString("call_put").equals("认购")){
                     CallOptionVO callOptionVO=new CallOptionVO();
