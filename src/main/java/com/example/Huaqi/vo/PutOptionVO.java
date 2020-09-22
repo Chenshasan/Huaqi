@@ -10,6 +10,17 @@ public class PutOptionVO implements Comparable<PutOptionVO> {
     Date time;
     double delta;
     double avg1_2;//买一买二平均值
+    int num;
+    int ETFNum;
+
+    public int getETFNum() {
+        return ETFNum;
+    }
+
+    public void setETFNum(int ETFNum) {
+        this.ETFNum = ETFNum;
+    }
+
 
     public int getNum() {
         return num;
@@ -18,9 +29,6 @@ public class PutOptionVO implements Comparable<PutOptionVO> {
     public void setNum(int num) {
         this.num = num;
     }
-
-    int num;
-
     public String getName() {
         return name;
     }

@@ -360,11 +360,11 @@ public class OptionServiceImpl implements OptionService {
 
                 JSONObject obj1=array1.getJSONObject(option_code);
                 JSONObject inObject = obj1.getJSONObject("curr_status");
-                double RT_BID1 = inObject.getDouble("RT_BID1");
-                double RT_BID2=inObject.getDouble("RT_BID2");
+                double RT_ASK1 = inObject.getDouble("RT_ASK1");
+                double RT_ASK2=inObject.getDouble("RT_ASK2");
                 double price=inObject.getDouble("RT_LAST");//期权价格
                 double ETF50price=inObject.getDouble("RT_USTOCK_PRICE");//50ETF价格
-                double avg1_2=(RT_BID1+RT_BID2)/2.0;//买一买二平均值
+                double avg1_2=(RT_ASK1+RT_ASK2)/2.0;//买一买二平均值
                 double thedelta=inObject.getDouble("RT_DELTA");//delta值
 
                 if(obj.getString("call_put").equals("认购")){
@@ -411,6 +411,17 @@ public class OptionServiceImpl implements OptionService {
         String list = jsonObject.getString("data");
         int logonId = Integer.parseInt(list.substring(1,list.length()-1));
         return logonId;
+
+//        String result1=Connection("http://114.212.242.163:5000/getList/510050.SH/2020-09-22");
+//        System.out.println(result1);
+//        //解析返回的query_str\query_info\query_list
+//        JSONObject startObj=new JSONObject(result1);
+//        String query_str=startObj.getString("query_str");
+//        JSONArray array=startObj.getJSONArray("query_info");
+//
+//        String result2=Connection("http://127.0.0.1:5000/getList/"+query_str);
+//        System.out.println(result2);
+//        return 0;
     }
 
     public void logout(int logonId){
@@ -420,5 +431,6 @@ public class OptionServiceImpl implements OptionService {
         String res = postConnection("http://114.212.242.163:5000/trade/tlogout",param);
         System.out.println(res);
     }
+
 
 }

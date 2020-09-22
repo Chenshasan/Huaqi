@@ -14,9 +14,7 @@ public class OptionServiceTest extends HuaqiApplicationTests{
 
     @Test
     public void testLogon(){
-        int res = optionService.logon();
-        System.out.println(res);
-        optionService.logout(res);
+        optionService.logon();
     }
 
     /**
@@ -52,6 +50,7 @@ public class OptionServiceTest extends HuaqiApplicationTests{
         }
         optionService.logout(logonId);
     }
+
 
 
 }

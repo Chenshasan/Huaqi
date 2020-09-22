@@ -12,8 +12,18 @@ public class CallOptionVO implements Comparable<CallOptionVO>{
     Date time;
     double delta;//delta值
     double avg1_2;//买一买二平均值
-
     double timeprice;//时间价值
+    int num;
+    int ETFNum;
+
+    public int getETFNum() {
+        return ETFNum;
+    }
+
+    public void setETFNum(int ETFNum) {
+        this.ETFNum = ETFNum;
+    }
+
 
     public int getNum() {
         return num;
@@ -23,7 +33,6 @@ public class CallOptionVO implements Comparable<CallOptionVO>{
         this.num = num;
     }
 
-    int num;
     public String getName() {
         return name;
     }
