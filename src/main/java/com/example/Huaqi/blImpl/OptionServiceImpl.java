@@ -38,6 +38,8 @@ public class OptionServiceImpl implements OptionService {
     List<PutOptionVO>Puts=new ArrayList<PutOptionVO>();
     public double D=0.7;    //暂定阈值
 
+    public double RemainingFund;  //剩余的资金
+
     public String Connection(String url){
         //1.获得一个httpclient对象
         CloseableHttpClient httpclient = HttpClients.createDefault();
@@ -137,6 +139,8 @@ public class OptionServiceImpl implements OptionService {
                     List<Double> Put_outPrice = new ArrayList<>();//认沽期权买入的挂价List,同上
                     double Call_outprice = Calls.get(i).getAvg1_2();//认购期权买入挂价
 
+                    double Sum_money;//当前购买认购加认沽期权需要的总资金数；
+
                     int index = 0;//挑选出的认沽期权在purchaseList中的index
                     int m = 1;//合适的m值
                     //选出合适的m
@@ -158,20 +162,28 @@ public class OptionServiceImpl implements OptionService {
                     if (count > put_count&&Calls.get(i).getNum()>=Call_num) {
                         int the_count = 0;
                         int the_index = 0;
+                        double put_money=0;//购买所有认沽期权需要的资金
                         //这里填充要买的认沽期权的true_purchaseList和对应每个认沽期权购买份数的List
                         while (true) {
                             true_purchaseList.add(purchaseList.get(the_index));
                             the_count = the_count + purchaseList.get(the_index).getNum();
                             if (the_count <= put_count) {
                                 Put_num.add(purchaseList.get(the_index).getNum());
+                                //认沽总价要加上当前认沽的价格
+                                put_money=put_money+purchaseList.get(the_index).getAvg1_2()*purchaseList.get(the_index).getNum();
                                 the_index++;
                             } else {
                                 Put_num.add(purchaseList.get(the_index).getNum() - (the_count - put_count));
+                                //认沽总价要加上当前认沽的价格
+                                put_money=put_money+purchaseList.get(the_index).getAvg1_2()*(purchaseList.get(the_index).getNum() - (the_count - put_count));
                                 break;
                             }
                         }
+                        //如果当前剩余资金足够那么就购买
+                        if(RemainingFund>=put_money+Calls.get(i).getAvg1_2()*Call_num){
                         myThreads x = new myThreads(Calls.get(i), true_purchaseList, Call_num, Put_num);
                         x.start();
+                        }
                     }
                 }
             }
@@ -244,6 +256,7 @@ public class OptionServiceImpl implements OptionService {
                     "}";
 
             postConnection("http://127.0.0.1:5000/trade/torder",param1);
+
 
             //TO DO 如果十秒之后交易没有成功（查询交易状态），则进行撤销委托的API调用
             for(int i=0;i<Put.size();i++) {
