@@ -16,4 +16,17 @@ public interface OptionService {
      */
     ResponseVO purchasePutOption();
 
+    /**
+     * 登录进入wind账户
+     * @param
+     * @return
+     */
+    ResponseVO login();
+
+    /**
+     * 周期性获取数据
+     * @param
+     * @return
+     */
+    ResponseVO getListRegularly();
 }

@@ -38,63 +38,6 @@ public class OptionServiceImpl implements OptionService {
     List<PutOptionVO>Puts=new ArrayList<PutOptionVO>();
     public double D=0.7;    //暂定阈值
 
-    public OptionServiceImpl() throws FileNotFoundException {
-        Connection("http://127.0.0.1:5000/loginWind");
-        String result1=Connection("http://127.0.0.1:5000/getList/510050.SH/20200923");
-
-
-        //解析返回的query_str\query_info\query_list
-        JSONObject startObj=new JSONObject(result1);
-        String query_str=startObj.getString("query_str");
-        JSONArray array=startObj.getJSONArray("query_info");
-
-        String result2=Connection("http://127.0.0.1:5000/getList/"+query_str);
-        JSONObject startObj1=new JSONObject(result2);
-        JSONArray array1=startObj1.getJSONArray("status_res");
-
-        for(int i=0;i<array.length();i++) {
-            try {
-                JSONObject obj = array.getJSONObject(i);
-                String us_code = obj.getString("option_code");//唯一标识符
-                double strike_price = obj.getDouble("strike_price");//行权价
-
-                JSONObject obj1=array1.getJSONObject(i);
-                JSONObject inObject = obj1.getJSONObject("curr_status");
-                double RT_BID1 = inObject.getDouble("RT_BID1");
-                double RT_BID2=inObject.getDouble("RT_BID2");
-                double price=inObject.getDouble("RT_LAST");//期权价格
-                double ETF50price=inObject.getDouble("RT_USTOCK_PRICE");//50ETF价格
-                double avg1_2=(RT_BID1+RT_BID2)/2.0;//买一买二平均值
-                double thedelta=inObject.getDouble("RT_DELTA");//delta值
-
-                if(obj.getString("call_put").equals("认购")){
-                    CallOptionVO callOptionVO=new CallOptionVO();
-                    callOptionVO.setOptioncode(us_code);
-                    callOptionVO.setExecPrice(strike_price);
-                    callOptionVO.setPrice(price);
-                    callOptionVO.setETFPrice(ETF50price);
-                    callOptionVO.setDelta(thedelta);
-                    callOptionVO.setAvg1_2(avg1_2);
-                    Calls.add(callOptionVO);
-                }
-                if(obj.getString("call_put").equals("认沽")){
-                    PutOptionVO putOptionVO=new PutOptionVO();
-                    putOptionVO.setOptioncode(us_code);
-                    putOptionVO.setExecPrice(strike_price);
-                    putOptionVO.setPrice(price);
-                    putOptionVO.setETFPrice(ETF50price);
-                    putOptionVO.setDelta(thedelta);
-                    putOptionVO.setAvg1_2(avg1_2);
-                    Puts.add(putOptionVO);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        System.out.println(Calls.toString());
-        System.out.println(Puts.toString());
-    }
-
     public String Connection(String url){
         //1.获得一个httpclient对象
         CloseableHttpClient httpclient = HttpClients.createDefault();
@@ -127,7 +70,10 @@ public class OptionServiceImpl implements OptionService {
                 e.printStackTrace();
             }
         }
-        return result;
+        JSONObject startObj=new JSONObject(result);
+        JSONObject res=startObj.getJSONObject("data");
+        System.out.println(res.toString());
+        return res.toString();
     }
 
     public String postConnection(String url, String jsonString){
@@ -189,7 +135,6 @@ public class OptionServiceImpl implements OptionService {
                     List<PutOptionVO> true_purchaseList = new ArrayList<>();//要购买的认沽期权List
                     List<Integer> Put_num = new ArrayList<>();//要购买的认沽期权份数对应的List,这里的数和对应的认沽期权List一一对应
                     List<Double> Put_outPrice = new ArrayList<>();//认沽期权买入的挂价List,同上
-                    int Call_num = 0;    //认购购买的份数
                     double Call_outprice = Calls.get(i).getAvg1_2();//认购期权买入挂价
 
                     int index = 0;//挑选出的认沽期权在purchaseList中的index
@@ -203,13 +148,14 @@ public class OptionServiceImpl implements OptionService {
                         }
                         m++;
                     }
+                    int Call_num = m;    //认购购买的份数
                     int count = 0;//purchaseList里面认沽期权的总份数
                     int put_count = (int) Math.round(-1 * m / purchaseList.get(0).getDelta());//购买认沽期权的份数
                     for (int p = 0; p < purchaseList.size(); p++) {
                         count = count + purchaseList.get(p).getNum();
                     }
                     //判断如果总份数都不能满足需要购买的量，满足了才继续
-                    if (count > put_count) {
+                    if (count > put_count&&Calls.get(i).getNum()>=Call_num) {
                         int the_count = 0;
                         int the_index = 0;
                         //这里填充要买的认沽期权的true_purchaseList和对应每个认沽期权购买份数的List
@@ -289,7 +235,7 @@ public class OptionServiceImpl implements OptionService {
                     "\"securityCode\": \""+Call.getOptioncode()+"\",\n" +
                     "\"tradeSide\": \"Buy\",\n" +
                     "\"orderPrice\": \""+Call.getAvg1_2()+"\",\n" +
-                    "\"orderVolume\": \""+Call.getNum()+"\",\n" +
+                    "\"orderVolume\": \""+Call_num+"\",\n" +
                     "\n" +
                     "\"options\": {\n" +
                     "\"OrderType\": \"LMT\",\n" +
@@ -308,7 +254,7 @@ public class OptionServiceImpl implements OptionService {
                         "\"securityCode\": \""+p.getOptioncode()+"\",\n" +
                         "\"tradeSide\": \"Buy\",\n" +
                         "\"orderPrice\": \""+p.getAvg1_2()+"\",\n" +
-                        "\"orderVolume\": \""+p.getNum()+"\",\n" +
+                        "\"orderVolume\": \""+every_num+"\",\n" +
                         "\n" +
                         "\"options\": {\n" +
                         "\"OrderType\": \"LMT\",\n" +
@@ -335,7 +281,7 @@ public class OptionServiceImpl implements OptionService {
                         "\"securityCode\": \""+Puts.get(i).getOptioncode()+"\",\n" +
                         "\"tradeSide\": \"Buy\",\n" +
                         "\"orderPrice\": \""+Puts.get(i).getAvg1_2()+"\",\n" +
-                        "\"orderVolume\": \""+Puts.get(i).getNum()+"\",\n" +
+                        "\"orderVolume\": \""+n+"\",\n" +
                         "\n" +
                         "\"options\": {\n" +
                         "\"OrderType\": \"LMT\",\n" +
@@ -346,6 +292,80 @@ public class OptionServiceImpl implements OptionService {
                 postConnection("http://127.0.0.1:5000/trade/torder",param);
             }
         }
+        return ResponseVO.buildSuccess();
+    }
+
+    @Override
+    public ResponseVO login() {
+            Connection("http://114.212.242.163:5000/getList/510050.SH/2020-09-22");
+//
+//        String param="{\n" +
+//                "    \"brokerId\": \"0000\",\n" +
+//                "    \"departmentId\": \"0\",\n" +
+//                "    \"logonAccount\": \"W5814909233703\",\n" +
+//                "    \"password\": \"000\",\n" +
+//                "    \"accountType\": \"SHO\"\n" +
+//                "}\n";
+//        postConnection("http://127.0.0.1:5000/trade/tlogon",param);
+        return ResponseVO.buildSuccess();
+    }
+
+    @Override
+    public ResponseVO getListRegularly() {
+        Calls=new ArrayList<>();
+        Puts=new ArrayList<>();
+        String result1=Connection("http://127.0.0.1:5000/getList/510050.SH/20200923");
+
+        //解析返回的query_str\query_info\query_list
+        JSONObject startObj=new JSONObject(result1);
+        String query_str=startObj.getString("query_str");
+        JSONArray array=startObj.getJSONArray("query_info");
+
+        String result2=Connection("http://127.0.0.1:5000/getList/"+query_str);
+        JSONObject startObj1=new JSONObject(result2);
+        JSONObject array1=startObj1.getJSONObject("status_res");
+
+        for(int i=0;i<array.length();i++) {
+            try {
+                JSONObject obj = array.getJSONObject(i);
+                String option_code = obj.getString("option_code");//唯一标识符
+                double strike_price = obj.getDouble("strike_price");//行权价
+
+                JSONObject obj1=array1.getJSONObject(option_code);
+                JSONObject inObject = obj1.getJSONObject("curr_status");
+                double RT_BID1 = inObject.getDouble("RT_BID1");
+                double RT_BID2=inObject.getDouble("RT_BID2");
+                double price=inObject.getDouble("RT_LAST");//期权价格
+                double ETF50price=inObject.getDouble("RT_USTOCK_PRICE");//50ETF价格
+                double avg1_2=(RT_BID1+RT_BID2)/2.0;//买一买二平均值
+                double thedelta=inObject.getDouble("RT_DELTA");//delta值
+
+                if(obj.getString("call_put").equals("认购")){
+                    CallOptionVO callOptionVO=new CallOptionVO();
+                    callOptionVO.setOptioncode(option_code);
+                    callOptionVO.setExecPrice(strike_price);
+                    callOptionVO.setPrice(price);
+                    callOptionVO.setETFPrice(ETF50price);
+                    callOptionVO.setDelta(thedelta);
+                    callOptionVO.setAvg1_2(avg1_2);
+                    Calls.add(callOptionVO);
+                }
+                if(obj.getString("call_put").equals("认沽")){
+                    PutOptionVO putOptionVO=new PutOptionVO();
+                    putOptionVO.setOptioncode(option_code);
+                    putOptionVO.setExecPrice(strike_price);
+                    putOptionVO.setPrice(price);
+                    putOptionVO.setETFPrice(ETF50price);
+                    putOptionVO.setDelta(thedelta);
+                    putOptionVO.setAvg1_2(avg1_2);
+                    Puts.add(putOptionVO);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println(Calls.toString());
+        System.out.println(Puts.toString());
         return ResponseVO.buildSuccess();
     }
 

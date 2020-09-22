@@ -11,7 +11,7 @@ public class OptionServiceTest extends HuaqiApplicationTests{
 
     @Test
     public void testPurchaseCallOption(){
-        optionService.purchaseCallOption();
+        optionService.login();
     }
 
 
