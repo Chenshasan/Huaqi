@@ -38,7 +38,7 @@ public class OptionServiceImpl implements OptionService {
     List<PutOptionVO>Puts=new ArrayList<PutOptionVO>();
     public double D=0.7;    //暂定阈值
 
-    public double RemainingFund;  //剩余的资金
+    public double RemainingFund=10000000;  //剩余的资金
 
     public String Connection(String url){
         //1.获得一个httpclient对象
@@ -256,6 +256,25 @@ public class OptionServiceImpl implements OptionService {
                     "}";
 
             postConnection("http://127.0.0.1:5000/trade/torder",param1);
+
+            for(int i=0;i<Put.size();i++) {
+                int every_num = Put_num.get(i);
+                PutOptionVO p = Put.get(i);//期权
+
+                String param="{\n" +
+                        "\"securityCode\": \""+p.getOptioncode()+"\",\n" +
+                        "\"tradeSide\": \"Buy\",\n" +
+                        "\"orderPrice\": \""+p.getAvg1_2()+"\",\n" +
+                        "\"orderVolume\": \""+every_num+"\",\n" +
+                        "\n" +
+                        "\"options\": {\n" +
+                        "\"OrderType\": \"LMT\",\n" +
+                        "\"HedgeType\": \"SPEC\"\n" +
+                        "}\n" +
+                        "}";
+
+                postConnection("http://127.0.0.1:5000/trade/torder",param);
+            }
             //postConnection("http://114.212.242.163:5000/trade/torder",param1);
 
             //如果十秒之后交易没有成功（查询交易状态），则进行撤销委托的API调用
@@ -286,25 +305,6 @@ public class OptionServiceImpl implements OptionService {
                 postConnection("http://127.0.0.1:5000/trade/tcancel",param3);
             }
             logout(logonId);
-
-            for(int i=0;i<Put.size();i++) {
-                int every_num = Put_num.get(i);
-                PutOptionVO p = Put.get(i);//期权
-
-                String param="{\n" +
-                        "\"securityCode\": \""+p.getOptioncode()+"\",\n" +
-                        "\"tradeSide\": \"Buy\",\n" +
-                        "\"orderPrice\": \""+p.getAvg1_2()+"\",\n" +
-                        "\"orderVolume\": \""+every_num+"\",\n" +
-                        "\n" +
-                        "\"options\": {\n" +
-                        "\"OrderType\": \"LMT\",\n" +
-                        "\"HedgeType\": \"SPEC\"\n" +
-                        "}\n" +
-                        "}";
-
-                postConnection("http://127.0.0.1:5000/trade/torder",param);
-            }
             return 0;
         }
     }
@@ -333,21 +333,6 @@ public class OptionServiceImpl implements OptionService {
                 postConnection("http://127.0.0.1:5000/trade/torder",param);
             }
         }
-        return ResponseVO.buildSuccess();
-    }
-
-    @Override
-    public ResponseVO login() {
-            Connection("http://114.212.242.163:5000/getList/510050.SH/2020-09-22");
-//
-//        String param="{\n" +
-//                "    \"brokerId\": \"0000\",\n" +
-//                "    \"departmentId\": \"0\",\n" +
-//                "    \"logonAccount\": \"W5814909233703\",\n" +
-//                "    \"password\": \"000\",\n" +
-//                "    \"accountType\": \"SHO\"\n" +
-//                "}\n";
-//        postConnection("http://127.0.0.1:5000/trade/tlogon",param);
         return ResponseVO.buildSuccess();
     }
 

@@ -15,7 +15,7 @@ import java.util.TimerTask;
 public class myTask  extends TimerTask {
     private OptionServiceImpl optionService=new OptionServiceImpl();
     @Override
-    public void run() {
-        optionService.login();
+    public void run(){
+        optionService.getListRegularly();
     }
 }
