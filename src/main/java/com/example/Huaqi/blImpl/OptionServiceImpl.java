@@ -245,7 +245,7 @@ public class OptionServiceImpl implements OptionService {
 
             postConnection("http://127.0.0.1:5000/trade/torder",param1);
 
-
+            //TO DO 如果十秒之后交易没有成功（查询交易状态），则进行撤销委托的API调用
             for(int i=0;i<Put.size();i++) {
                 int every_num = Put_num.get(i);
                 PutOptionVO p = Put.get(i);//期权
