@@ -36,11 +36,13 @@ import java.util.stream.Collectors;
 public class OptionServiceImpl implements OptionService {
     List<CallOptionVO>Calls=new ArrayList<CallOptionVO>();
     List<PutOptionVO>Puts=new ArrayList<PutOptionVO>();
-    public double D=0.7;    //暂定阈值
+    ExecutorService service =Executors.newCachedThreadPool();
+    public double D=-0.7;    //暂定阈值
     public int logonId=1;
 
     public double RemainingFund=10000000;  //剩余的资金
 
+    @Override
     public String Connection(String url){
         //1.获得一个httpclient对象
         CloseableHttpClient httpclient = HttpClients.createDefault();
@@ -73,13 +75,14 @@ public class OptionServiceImpl implements OptionService {
                 e.printStackTrace();
             }
         }
-        System.out.println("aaa"+result);
+     //   System.out.println("aaa"+result);
         JSONObject startObj=new JSONObject(result);
         JSONObject res=startObj.getJSONObject("data");
-        System.out.println(res.toString());
+     //   System.out.println(res.toString());
         return res.toString();
     }
 
+    @Override
     public String postConnection(String url, String jsonString){
         //1.获得一个httpclient对象
         CloseableHttpResponse response = null;
@@ -103,7 +106,7 @@ public class OptionServiceImpl implements OptionService {
             if (entity != null) {
                 result = EntityUtils.toString(entity);
             }
-            System.out.println(result);
+           // System.out.println(result);
         } catch (ParseException | IOException e) {
             e.printStackTrace();
         } finally {
@@ -119,14 +122,17 @@ public class OptionServiceImpl implements OptionService {
     @Override
     public ResponseVO purchaseCallOption(){
         Collections.sort(Calls);//将时间价值按升序排列，以便购买的时候从时间价值最小的期权开始
+        System.out.println("运行到此处");
         for(int i=0;i<Calls.size();i++){
            // 时间价值小于0准备购买
+            System.out.println(Calls.get(i).toString());
             if(Calls.get(i).getTimeprice()<0){
                 List<PutOptionVO>purchaseList=new ArrayList<>();//认购期权对应的认沽期权List
                 //认购期权对应的认沽期权，且这些期权是满足条件-1<delta<阈值的认沽期权
                 for(int j=0;j<Puts.size();j++) {
-                    if ((-1 < Puts.get(j).getDelta() && Puts.get(j).getDelta() < D)) {
-                        purchaseList.add(Puts.get(i));
+                    //System.out.println("认沽期权"+Puts.get(j).toString());
+                    if ((Puts.get(j).getDelta()<-0.7)&&(Puts.get(j).getDelta()<=-1)) {
+                        purchaseList.add(Puts.get(j));
                     }
                 }
                 /*
@@ -150,6 +156,7 @@ public class OptionServiceImpl implements OptionService {
                     while (true) {
                         //将m从1开始++1，如果有m能够满足-1*m/delta接近整数并且误差小于0.1时，则选择该m
                         double judge = -1 * m / purchaseList.get(0).getDelta();
+                        System.out.println(purchaseList.get(0).getDelta());
                         if (judge - Math.floor(judge) < 0.1 || Math.ceil(judge) - judge < 0.1) {
                             break;
                         }
@@ -158,6 +165,8 @@ public class OptionServiceImpl implements OptionService {
                     int Call_num = m;    //认购购买的份数
                     int count = 0;//purchaseList里面认沽期权的总份数
                     int put_count = (int) Math.round(-1 * m / purchaseList.get(0).getDelta());//购买认沽期权的份数
+
+                   // System.out.println("购买期权的份数"+put_count);
                     for (int p = 0; p < purchaseList.size(); p++) {
                         count = count + purchaseList.get(p).getNum();
                     }
@@ -187,6 +196,7 @@ public class OptionServiceImpl implements OptionService {
                         Sum_money=put_money+Calls.get(i).getPrice()*Call_num+Calls.get(i).getETFNum()*Calls.get(i).getExecPrice();
                         if(RemainingFund>=Sum_money){
                         myThreads x = new myThreads(Calls.get(i), true_purchaseList, Call_num, Put_num,Sum_money);
+                        service.execute(x);
                         }
                     }
                 }
@@ -219,10 +229,10 @@ public class OptionServiceImpl implements OptionService {
             FutureTask<Integer> futureTask = new FutureTask<Integer>(task);
             Thread thread = new Thread(futureTask);
             thread.start();
-            System.out.println("threads is running");
+            //System.out.println("_____________________________threads is running");
 
             try {
-                futureTask.get(10000, TimeUnit.MILLISECONDS);
+                futureTask.get(200000, TimeUnit.MILLISECONDS);
             } catch (InterruptedException | ExecutionException | TimeoutException e) {
                 e.printStackTrace();
             }
@@ -251,6 +261,7 @@ public class OptionServiceImpl implements OptionService {
         @Override
         public Integer call() throws Exception {
             //调用具体的购买API
+            System.out.println("调用购买API");
             String param1="{\n" +
                     "\"securityCode\": \""+Call.getOptioncode()+"\",\n" +
                     "\"tradeSide\": \"Buy\",\n" +
@@ -262,7 +273,7 @@ public class OptionServiceImpl implements OptionService {
                     "\"HedgeType\": \"SPEC\"\n" +
                     "}\n" +
                     "}";
-            postConnection("http://114.212.242.163:5000/trade/torder",param1);
+            System.out.println(postConnection("http://114.212.242.163:5000/trade/torder",param1));
 
             //postConnection("http://114.212.242.163:5000/trade/torder",param1);
 
@@ -283,9 +294,9 @@ public class OptionServiceImpl implements OptionService {
             JSONArray jsonArray = jsonObject0.getJSONArray("data");
             JSONObject jsonObject = new JSONObject((String) jsonArray.get(0));
             String orderStatus = jsonObject.getString("OrderStatus");
-            System.out.println(orderStatus);
+            //System.out.println(orderStatus);
             int orderNum = jsonObject.getInt("OrderNumber");
-            System.out.println(orderNum);
+           // System.out.println(orderNum);
             //交易后我们的剩余资金要减去这次交易所需要的总的资金
             RemainingFund=RemainingFund-Sum_money;
             if(!orderStatus.equals("Normal")){
@@ -388,7 +399,7 @@ public class OptionServiceImpl implements OptionService {
                     callOptionVO.setNum(RT_LAST_AMT);
                     callOptionVO.setETFNum(RT_LAST_VOL);
 
-                    double timePrice=Math.max(callOptionVO.getETFPrice()-callOptionVO.getExecPrice(),0);//时间价值
+                    double timePrice=callOptionVO.getPrice()-Math.max(callOptionVO.getETFPrice()-callOptionVO.getExecPrice(),0);//时间价值
                     callOptionVO.setTimeprice(timePrice);
                     Calls.add(callOptionVO);
                 }
@@ -409,16 +420,19 @@ public class OptionServiceImpl implements OptionService {
                 e.printStackTrace();
             }
         }
-        System.out.println(Calls.toString());
-        System.out.println(Puts.toString());
+        //System.out.println(Calls.toString());
+        //
+        //
+        // System.out.println(Puts.toString());
         return ResponseVO.buildSuccess();
     }
 
+    @Override
     public int logon(){
         String param = "{\n" +
                 "\"brokerId\": \"0000\",\n" +
                 "\"departmentId\": \"0\",\n" +
-                "\"logonAccount\": \"W5814909233703\",\n" +
+                "\"logonAccount\": \"W631190900503\",\n" +
                 "\"password\": \"000\",\n" +
                 "\"accountType\": \"SHO\"\n" +
                 "}";
@@ -440,11 +454,12 @@ public class OptionServiceImpl implements OptionService {
 //        return 0;
     }
 
+    @Override
     public void logout(int logonId){
         String param = "{\n" +
                 "\"logonId\": \"" + logonId + "\"\n" +
                 "}";
         String res = postConnection("http://114.212.242.163:5000/trade/tlogout",param);
-        System.out.println(res);
+        //System.out.println(res);
     }
 }

@@ -18,6 +18,6 @@ public class HuaqiApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(HuaqiApplication.class, args);
 		myTask task = new myTask();
-		timer.schedule(task, 0, 15000);//以当前基准时间延迟0秒后执行一次，以后按指定间隔时间1秒无限次数的执行。
+		timer.schedule(task, 0, 10000);//以当前基准时间延迟0秒后执行一次，以后按指定间隔时间1秒无限次数的执行。
 	}
 }

@@ -57,8 +57,15 @@ public class OptionServiceTest extends HuaqiApplicationTests{
     }
 
     @Test
+    public void allTest() throws JSONException {
+        optionService.getListRegularly();
+        optionService.purchasePutOption();
+        optionService.purchaseCallOption();
+    }
+
+    @Test
     public void testLogOut() throws JSONException {
-        optionService.logout(1);
+        optionService.logout(3);
     }
 
     @Test
@@ -93,8 +100,11 @@ public class OptionServiceTest extends HuaqiApplicationTests{
 
     @Test
     public void testCancel() throws JSONException {
-        String param3 = "\"{\n"+
-                "\"OrderNumber\":\"" + 1 + "\"\n" +
+        String param3 = "{\n" +
+                "    \"OrderNumber\": \"5\",\n" +
+                "    \"options\": {\n" +
+                "        \"LogonId\": \"1\"\n" +
+                "    }\n" +
                 "}";
         optionService.postConnection("http://114.212.242.163:5000/trade/tcancel",param3);
     }
