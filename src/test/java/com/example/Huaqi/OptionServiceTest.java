@@ -51,6 +51,51 @@ public class OptionServiceTest extends HuaqiApplicationTests{
         optionService.logout(logonId);
     }
 
+    @Test
+    public void testConnection() throws JSONException {
+        optionService.getListRegularly();
+    }
 
+    @Test
+    public void testLogOut() throws JSONException {
+        optionService.logout(1);
+    }
 
+    @Test
+    public void testOrder() throws JSONException {
+        String param="{\n" +
+                "\"securityCode\": \""+"10002736.SH"+"\",\n" +
+                "\"tradeSide\": \"Buy\",\n" +
+                "\"orderPrice\": \""+0.57+"\",\n" +
+                "\"orderVolume\": \""+1+"\",\n" +
+                "\n" +
+                "\"options\": {\n" +
+                "\"OrderType\": \"LMT\",\n" +
+                "\"HedgeType\": \"SPEC\"\n" +
+                "}\n" +
+                "}";
+        optionService.postConnection("http://114.212.242.163:5000/trade/torder",param);
+    }
+
+    @Test
+    public void testQuery() throws JSONException {
+        String param2 = "{\n"+
+                "\"queryType\":\""+"Order\",\n" +
+                "\"options\":{\n" +
+                "\"LogonID\":\"" + 1 + "\"" +
+                "}\n" +
+                "}";
+        String res2 = optionService.postConnection("http://114.212.242.163:5000/trade/tquery",param2);
+        JSONObject jsonObject0 = new JSONObject(res2);
+        JSONArray jsonArray = jsonObject0.getJSONArray("data");
+        System.out.println(jsonArray);
+    }
+
+    @Test
+    public void testCancel() throws JSONException {
+        String param3 = "\"{\n"+
+                "\"OrderNumber\":\"" + 1 + "\"\n" +
+                "}";
+        optionService.postConnection("http://114.212.242.163:5000/trade/tcancel",param3);
+    }
 }

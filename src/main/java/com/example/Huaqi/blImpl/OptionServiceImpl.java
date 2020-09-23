@@ -37,6 +37,7 @@ public class OptionServiceImpl implements OptionService {
     List<CallOptionVO>Calls=new ArrayList<CallOptionVO>();
     List<PutOptionVO>Puts=new ArrayList<PutOptionVO>();
     public double D=0.7;    //暂定阈值
+    public int logonId=1;
 
     public double RemainingFund=10000000;  //剩余的资金
 
@@ -72,6 +73,7 @@ public class OptionServiceImpl implements OptionService {
                 e.printStackTrace();
             }
         }
+        System.out.println("aaa"+result);
         JSONObject startObj=new JSONObject(result);
         JSONObject res=startObj.getJSONObject("data");
         System.out.println(res.toString());
@@ -260,8 +262,7 @@ public class OptionServiceImpl implements OptionService {
                     "\"HedgeType\": \"SPEC\"\n" +
                     "}\n" +
                     "}";
-
-            postConnection("http://127.0.0.1:5000/trade/torder",param1);
+            postConnection("http://114.212.242.163:5000/trade/torder",param1);
 
             //postConnection("http://114.212.242.163:5000/trade/torder",param1);
 
@@ -271,7 +272,6 @@ public class OptionServiceImpl implements OptionService {
             }catch (Exception e){
                 e.printStackTrace();
             }
-            int logonId = logon();
             String param2 = "{\n"+
                     "\"queryType\":\""+"Order\",\n" +
                     "\"options\":{\n" +
@@ -292,29 +292,28 @@ public class OptionServiceImpl implements OptionService {
                 String param3 = "\"{\n"+
                         "\"OrderNumber\":\"" + orderNum + "\"\n" +
                         "}";
-                postConnection("http://127.0.0.1:5000/trade/tcancel",param3);
+                postConnection("http://114.212.242.163:5000/trade/tcancel",param3);
                 //撤销以后我们剩余的资金要进行恢复
                 RemainingFund=RemainingFund+Sum_money;
             }
-            logout(logonId);
+            else{
+                for(int i=0;i<Put.size();i++) {
+                    int every_num = Put_num.get(i);
+                    PutOptionVO p = Put.get(i);//期权
 
-            for(int i=0;i<Put.size();i++) {
-                int every_num = Put_num.get(i);
-                PutOptionVO p = Put.get(i);//期权
-
-                String param="{\n" +
-                        "\"securityCode\": \""+p.getOptioncode()+"\",\n" +
-                        "\"tradeSide\": \"Buy\",\n" +
-                        "\"orderPrice\": \""+p.getAvg1_2()+"\",\n" +
-                        "\"orderVolume\": \""+every_num+"\",\n" +
-                        "\n" +
-                        "\"options\": {\n" +
-                        "\"OrderType\": \"LMT\",\n" +
-                        "\"HedgeType\": \"SPEC\"\n" +
-                        "}\n" +
-                        "}";
-
-                postConnection("http://127.0.0.1:5000/trade/torder",param);
+                    String param="{\n" +
+                            "\"securityCode\": \""+p.getOptioncode()+"\",\n" +
+                            "\"tradeSide\": \"Buy\",\n" +
+                            "\"orderPrice\": \""+p.getAvg1_2()+"\",\n" +
+                            "\"orderVolume\": \""+every_num+"\",\n" +
+                            "\n" +
+                            "\"options\": {\n" +
+                            "\"OrderType\": \"LMT\",\n" +
+                            "\"HedgeType\": \"SPEC\"\n" +
+                            "}\n" +
+                            "}";
+                    postConnection("http://114.212.242.163:5000/trade/torder",param);
+            }
             }
             return 0;
         }
@@ -340,8 +339,7 @@ public class OptionServiceImpl implements OptionService {
                         "\"HedgeType\": \"SPEC\"\n" +
                         "}\n" +
                         "}";
-
-                postConnection("http://127.0.0.1:5000/trade/torder",param);
+                postConnection("http://114.212.242.163:5000/trade/torder",param);
             }
         }
         return ResponseVO.buildSuccess();
@@ -351,14 +349,14 @@ public class OptionServiceImpl implements OptionService {
     public ResponseVO getListRegularly() {
         Calls=new ArrayList<>();
         Puts=new ArrayList<>();
-        String result1=Connection("http://127.0.0.1:5000/getList/510050.SH/20200923");
+        String result1=Connection("http://114.212.242.163:5000/getList/510050.SH/20200923");
 
         //解析返回的query_str\query_info\query_list
         JSONObject startObj=new JSONObject(result1);
         String query_str=startObj.getString("query_str");
         JSONArray array=startObj.getJSONArray("query_info");
 
-        String result2=Connection("http://127.0.0.1:5000/getList/"+query_str);
+        String result2=Connection("http://114.212.242.163:5000/getOptions/"+query_str);
         JSONObject startObj1=new JSONObject(result2);
         JSONObject array1=startObj1.getJSONObject("status_res");
 
@@ -369,8 +367,7 @@ public class OptionServiceImpl implements OptionService {
                 double strike_price = obj.getDouble("strike_price");//行权价
                 int multiplier=obj.getInt("multiplier");//50ETF数量
 
-                JSONObject obj1=array1.getJSONObject(option_code);
-                JSONObject inObject = obj1.getJSONObject("curr_status");
+                JSONObject inObject=array1.getJSONObject(option_code);
                 double RT_ASK1 = inObject.getDouble("RT_ASK1");
                 double RT_ASK2=inObject.getDouble("RT_ASK2");
                 double price=inObject.getDouble("RT_LAST");//期权价格
@@ -378,6 +375,7 @@ public class OptionServiceImpl implements OptionService {
                 double avg1_2=(RT_ASK1+RT_ASK2)/2.0;//买一买二平均值
                 double thedelta=inObject.getDouble("RT_DELTA");//delta值
                 int RT_LAST_AMT=inObject.getInt("RT_LAST_AMT");//50ETF的行权量
+                int RT_LAST_VOL=inObject.getInt("RT_LAST_VOL");
 
                 if(obj.getString("call_put").equals("认购")){
                     CallOptionVO callOptionVO=new CallOptionVO();
@@ -387,6 +385,9 @@ public class OptionServiceImpl implements OptionService {
                     callOptionVO.setETFPrice(ETF50price);
                     callOptionVO.setDelta(thedelta);
                     callOptionVO.setAvg1_2(avg1_2);
+                    callOptionVO.setNum(RT_LAST_AMT);
+                    callOptionVO.setETFNum(RT_LAST_VOL);
+
                     double timePrice=Math.max(callOptionVO.getETFPrice()-callOptionVO.getExecPrice(),0);//时间价值
                     callOptionVO.setTimeprice(timePrice);
                     Calls.add(callOptionVO);
@@ -399,6 +400,9 @@ public class OptionServiceImpl implements OptionService {
                     putOptionVO.setETFPrice(ETF50price);
                     putOptionVO.setDelta(thedelta);
                     putOptionVO.setAvg1_2(avg1_2);
+                    putOptionVO.setNum(RT_LAST_AMT);
+                    putOptionVO.setETFNum(RT_LAST_VOL);
+
                     Puts.add(putOptionVO);
                 }
             } catch (Exception e) {
@@ -443,6 +447,4 @@ public class OptionServiceImpl implements OptionService {
         String res = postConnection("http://114.212.242.163:5000/trade/tlogout",param);
         System.out.println(res);
     }
-
-
 }

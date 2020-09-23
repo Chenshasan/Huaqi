@@ -17,5 +17,7 @@ public class myTask  extends TimerTask {
     @Override
     public void run(){
         optionService.getListRegularly();
+        optionService.purchaseCallOption();
+        optionService.purchasePutOption();
     }
 }

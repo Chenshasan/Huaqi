@@ -110,4 +110,9 @@ public class PutOptionVO implements Comparable<PutOptionVO> {
             return -1;
         }
     }
+
+    @Override
+    public String toString() {
+        return "optionCode"+this.optioncode+"price"+this.price+"execPrice"+this.execPrice+"ETFPrice"+this.ETFPrice+"delta"+this.delta+"avg1_2"+this.avg1_2+"num"+this.num;
+    }
 }

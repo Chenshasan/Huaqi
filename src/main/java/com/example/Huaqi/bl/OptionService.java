@@ -24,6 +24,7 @@ public interface OptionService {
     ResponseVO getListRegularly();
 
     String postConnection(String url, String jsonString);
+    String Connection(String url);
 
     /**
      * 登录
