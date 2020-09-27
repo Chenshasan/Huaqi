@@ -274,15 +274,18 @@ public class OptionServiceImpl implements OptionService {
                     "}\n" +
                     "}";
             System.out.println(postConnection("http://114.212.242.163:5000/trade/torder",param1));
-
+            System.out.println("----------------------------------");
             //postConnection("http://114.212.242.163:5000/trade/torder",param1);
 
             //如果十秒之后交易没有成功（查询交易状态），则进行撤销委托的API调用
             try{
                 Thread.currentThread().sleep(10000);
+                System.out.println("线程睡10s");
             }catch (Exception e){
                 e.printStackTrace();
             }
+
+            System.out.println("线程已重新工作");
             String param2 = "{\n"+
                     "\"queryType\":\""+"Order\",\n" +
                     "\"options\":{\n" +
@@ -294,9 +297,9 @@ public class OptionServiceImpl implements OptionService {
             JSONArray jsonArray = jsonObject0.getJSONArray("data");
             JSONObject jsonObject = new JSONObject((String) jsonArray.get(0));
             String orderStatus = jsonObject.getString("OrderStatus");
-            //System.out.println(orderStatus);
+            System.out.println(orderStatus);
             int orderNum = jsonObject.getInt("OrderNumber");
-           // System.out.println(orderNum);
+            System.out.println(orderNum);
             //交易后我们的剩余资金要减去这次交易所需要的总的资金
             RemainingFund=RemainingFund-Sum_money;
             if(!orderStatus.equals("Normal")){
@@ -306,6 +309,7 @@ public class OptionServiceImpl implements OptionService {
                 postConnection("http://114.212.242.163:5000/trade/tcancel",param3);
                 //撤销以后我们剩余的资金要进行恢复
                 RemainingFund=RemainingFund+Sum_money;
+                System.out.println("已撤销");
             }
             else{
                 for(int i=0;i<Put.size();i++) {
@@ -440,6 +444,8 @@ public class OptionServiceImpl implements OptionService {
         JSONObject jsonObject = new JSONObject(res);
         String list = jsonObject.getString("data");
         int logonId = Integer.parseInt(list.substring(1,list.length()-1));
+        System.out.println("Logon");
+        System.out.println(logonId);
         return logonId;
 
 //        String result1=Connection("http://114.212.242.163:5000/getList/510050.SH/2020-09-22");
@@ -460,6 +466,7 @@ public class OptionServiceImpl implements OptionService {
                 "\"logonId\": \"" + logonId + "\"\n" +
                 "}";
         String res = postConnection("http://114.212.242.163:5000/trade/tlogout",param);
-        //System.out.println(res);
+        System.out.println("Logout");
+        System.out.println(res);
     }
 }

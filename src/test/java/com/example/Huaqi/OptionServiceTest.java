@@ -45,7 +45,7 @@ public class OptionServiceTest extends HuaqiApplicationTests{
             String param3 = "\"{\n"+
                     "\"OrderNumber\":\"" + orderNum + "\"\n" +
                     "}";
-            optionService.postConnection("http://127.0.0.1:5000/trade/tcancel",param3);
+            optionService.postConnection("http://114.212.242.163:5000/trade/tcancel",param3);
             //optionService.logout(logonId);
         }
         optionService.logout(logonId);
