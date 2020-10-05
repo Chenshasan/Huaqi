@@ -38,7 +38,7 @@ public class OptionServiceImpl implements OptionService {
     List<PutOptionVO>Puts=new ArrayList<PutOptionVO>();
     ExecutorService service =Executors.newCachedThreadPool();
     public double D=-0.7;    //暂定阈值
-    public int logonId=1;
+    public int logonId=4;
 
     public double RemainingFund=10000000;  //剩余的资金
 
@@ -106,7 +106,7 @@ public class OptionServiceImpl implements OptionService {
             if (entity != null) {
                 result = EntityUtils.toString(entity);
             }
-           // System.out.println(result);
+            System.out.println(result);
         } catch (ParseException | IOException e) {
             e.printStackTrace();
         } finally {
@@ -196,7 +196,7 @@ public class OptionServiceImpl implements OptionService {
                         Sum_money=put_money+Calls.get(i).getPrice()*Call_num+Calls.get(i).getETFNum()*Calls.get(i).getExecPrice();
                         if(RemainingFund>=Sum_money){
                         myThreads x = new myThreads(Calls.get(i), true_purchaseList, Call_num, Put_num,Sum_money);
-                        service.execute(x);
+                        x.start();
                         }
                     }
                 }
@@ -232,8 +232,8 @@ public class OptionServiceImpl implements OptionService {
             //System.out.println("_____________________________threads is running");
 
             try {
-                futureTask.get(200000, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                futureTask.get();
+            } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
         }
@@ -273,16 +273,16 @@ public class OptionServiceImpl implements OptionService {
                     "\"HedgeType\": \"SPEC\"\n" +
                     "}\n" +
                     "}";
-            System.out.println(postConnection("http://114.212.242.163:5000/trade/torder",param1));
+            System.out.println("购买"+postConnection("http://114.212.242.163:5000/trade/torder",param1));
 
             //postConnection("http://114.212.242.163:5000/trade/torder",param1);
 
             //如果十秒之后交易没有成功（查询交易状态），则进行撤销委托的API调用
-            try{
-                Thread.currentThread().sleep(10000);
-            }catch (Exception e){
-                e.printStackTrace();
-            }
+//            try{
+//                Thread.sleep(10000);
+//            }catch (Exception e){
+//                e.printStackTrace();
+//            }
             String param2 = "{\n"+
                     "\"queryType\":\""+"Order\",\n" +
                     "\"options\":{\n" +
@@ -290,8 +290,11 @@ public class OptionServiceImpl implements OptionService {
                     "}\n" +
                     "}";
             String res2 = postConnection("http://114.212.242.163:5000/trade/tquery",param2);
+            System.out.println(res2);
             JSONObject jsonObject0 = new JSONObject(res2);
             JSONArray jsonArray = jsonObject0.getJSONArray("data");
+
+
             JSONObject jsonObject = new JSONObject((String) jsonArray.get(0));
             String orderStatus = jsonObject.getString("OrderStatus");
             //System.out.println(orderStatus);
