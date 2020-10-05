@@ -65,7 +65,7 @@ public class OptionServiceImpl implements OptionService {
             if (entity != null) {
                 result = EntityUtils.toString(entity);
             }
-            System.out.println(result);
+            //System.out.println(result);
         } catch (ParseException | IOException e) {
             e.printStackTrace();
         } finally {
@@ -122,10 +122,11 @@ public class OptionServiceImpl implements OptionService {
     @Override
     public ResponseVO purchaseCallOption(){
         Collections.sort(Calls);//将时间价值按升序排列，以便购买的时候从时间价值最小的期权开始
-        System.out.println("运行到此处");
+        //System.out.println("运行到此处");
         for(int i=0;i<Calls.size();i++){
            // 时间价值小于0准备购买
-            System.out.println(Calls.get(i).toString());
+            //System.out.println("剩余的资金"+RemainingFund);
+           // System.out.println(Calls.get(i).toString());
             if(Calls.get(i).getTimeprice()<0){
                 List<PutOptionVO>purchaseList=new ArrayList<>();//认购期权对应的认沽期权List
                 //认购期权对应的认沽期权，且这些期权是满足条件-1<delta<阈值的认沽期权
@@ -156,7 +157,7 @@ public class OptionServiceImpl implements OptionService {
                     while (true) {
                         //将m从1开始++1，如果有m能够满足-1*m/delta接近整数并且误差小于0.1时，则选择该m
                         double judge = -1 * m / purchaseList.get(0).getDelta();
-                        System.out.println(purchaseList.get(0).getDelta());
+                        //System.out.println(purchaseList.get(0).getDelta());
                         if (judge - Math.floor(judge) < 0.1 || Math.ceil(judge) - judge < 0.1) {
                             break;
                         }
@@ -297,11 +298,11 @@ public class OptionServiceImpl implements OptionService {
 
             JSONObject jsonObject = new JSONObject((String) jsonArray.get(0));
             String orderStatus = jsonObject.getString("OrderStatus");
-            //System.out.println(orderStatus);
+            System.out.println("状态");
+            System.out.println(orderStatus);
             int orderNum = jsonObject.getInt("OrderNumber");
            // System.out.println(orderNum);
-            //交易后我们的剩余资金要减去这次交易所需要的总的资金
-            RemainingFund=RemainingFund-Sum_money;
+
             if(!orderStatus.equals("Normal")){
                 String param3 = "\"{\n"+
                         "\"OrderNumber\":\"" + orderNum + "\"\n" +
@@ -311,23 +312,27 @@ public class OptionServiceImpl implements OptionService {
                 RemainingFund=RemainingFund+Sum_money;
             }
             else{
+                System.out.println("买入认沽期权");
                 for(int i=0;i<Put.size();i++) {
                     int every_num = Put_num.get(i);
                     PutOptionVO p = Put.get(i);//期权
 
-                    String param="{\n" +
-                            "\"securityCode\": \""+p.getOptioncode()+"\",\n" +
+                    String param = "{\n" +
+                            "\"securityCode\": \"" + p.getOptioncode() + "\",\n" +
                             "\"tradeSide\": \"Buy\",\n" +
-                            "\"orderPrice\": \""+p.getAvg1_2()+"\",\n" +
-                            "\"orderVolume\": \""+every_num+"\",\n" +
+                            "\"orderPrice\": \"" + p.getAvg1_2() + "\",\n" +
+                            "\"orderVolume\": \"" + every_num + "\",\n" +
                             "\n" +
                             "\"options\": {\n" +
                             "\"OrderType\": \"LMT\",\n" +
                             "\"HedgeType\": \"SPEC\"\n" +
                             "}\n" +
                             "}";
-                    postConnection("http://114.212.242.163:5000/trade/torder",param);
-            }
+                  System.out.println(postConnection("http://114.212.242.163:5000/trade/torder", param));
+                    //交易后我们的剩余资金要减去这次交易所需要的总的资金
+                    RemainingFund=RemainingFund-Sum_money;
+
+                }
             }
             return 0;
         }
