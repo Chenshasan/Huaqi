@@ -422,6 +422,9 @@ public class OptionServiceImpl implements OptionService {
                     putOptionVO.setNum(RT_LAST_AMT);
                     putOptionVO.setETFNum(RT_LAST_VOL);
 
+                    double timePrice=putOptionVO.getPrice()-Math.max(putOptionVO.getExecPrice()-putOptionVO.getETFPrice(),0);//时间价值
+                    putOptionVO.setTimeprice(timePrice);
+
                     Puts.add(putOptionVO);
                 }
             } catch (Exception e) {
