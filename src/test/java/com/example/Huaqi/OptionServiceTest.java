@@ -108,4 +108,17 @@ public class OptionServiceTest extends HuaqiApplicationTests{
                 "}";
         optionService.postConnection("http://114.212.242.163:5000/trade/tcancel",param3);
     }
+
+    @Test
+    public void testWaitAndQuery() throws JSONException {
+        try{
+            Thread.sleep(10000);
+            System.out.println("线程睡10s");
+        }catch (Exception e){
+            System.out.println("线程睡失败");
+            e.printStackTrace();
+        }
+        System.out.println("线程已重新工作");
+        testQuery();
+    }
 }

@@ -283,12 +283,12 @@ public class OptionServiceImpl implements OptionService {
 
             //如果十秒之后交易没有成功（查询交易状态），则进行撤销委托的API调用
             try{
-                Thread.currentThread().sleep(10000);
+                Thread.sleep(10000);
                 System.out.println("线程睡10s");
             }catch (Exception e){
+                System.out.println("线程睡失败");
                 e.printStackTrace();
             }
-
             System.out.println("线程已重新工作");
             String param2 = "{\n"+
                     "\"queryType\":\""+"Order\",\n" +
