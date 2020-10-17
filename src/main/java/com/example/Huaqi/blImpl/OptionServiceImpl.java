@@ -106,7 +106,7 @@ public class OptionServiceImpl implements OptionService {
             if (entity != null) {
                 result = EntityUtils.toString(entity);
             }
-           // System.out.println(result);
+            System.out.println(result);
         } catch (ParseException | IOException e) {
             e.printStackTrace();
         } finally {
@@ -197,7 +197,7 @@ public class OptionServiceImpl implements OptionService {
                         Sum_money=put_money+Calls.get(i).getPrice()*Call_num+Calls.get(i).getETFNum()*Calls.get(i).getExecPrice();
                         if(RemainingFund>=Sum_money){
                         myThreads x = new myThreads(Calls.get(i), true_purchaseList, Call_num, Put_num,Sum_money);
-                        service.execute(x);
+                        x.start();
                         }
                     }
                 }
@@ -233,11 +233,9 @@ public class OptionServiceImpl implements OptionService {
             //System.out.println("_____________________________threads is running");
 
             try {
-                futureTask.get(200000, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-               e.printStackTrace();
-                //System.out.println("超时");
-
+                futureTask.get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -276,9 +274,8 @@ public class OptionServiceImpl implements OptionService {
                     "\"HedgeType\": \"SPEC\"\n" +
                     "}\n" +
                     "}";
-            //String re=postConnection("http://114.212.242.163:5000/trade/torder",param1);
-            System.out.println(postConnection("http://114.212.242.163:5000/trade/torder",param1));
-            System.out.println("----------------------------------");
+            System.out.println("购买"+postConnection("http://114.212.242.163:5000/trade/torder",param1));
+
             //postConnection("http://114.212.242.163:5000/trade/torder",param1);
 
             //如果十秒之后交易没有成功（查询交易状态），则进行撤销委托的API调用
@@ -297,9 +294,7 @@ public class OptionServiceImpl implements OptionService {
                     "}\n" +
                     "}";
             String res2 = postConnection("http://114.212.242.163:5000/trade/tquery",param2);
-            //System.out.println("执行到这里");
-            //System.out.println("--------------------------------");
-            //System.out.println(res2);
+            System.out.println(res2);
             JSONObject jsonObject0 = new JSONObject(res2);
             JSONArray jsonArray = jsonObject0.getJSONArray("data");
             JSONObject jsonObject = new JSONObject((String) jsonArray.get(0));
@@ -429,6 +424,9 @@ public class OptionServiceImpl implements OptionService {
                     putOptionVO.setNum(RT_LAST_AMT);
                     putOptionVO.setETFNum(RT_LAST_VOL);
 
+                    double timePrice=putOptionVO.getPrice()-Math.max(putOptionVO.getExecPrice()-putOptionVO.getETFPrice(),0);//时间价值
+                    putOptionVO.setTimeprice(timePrice);
+
                     Puts.add(putOptionVO);
                 }
             } catch (Exception e) {
@@ -455,8 +453,6 @@ public class OptionServiceImpl implements OptionService {
         JSONObject jsonObject = new JSONObject(res);
         String list = jsonObject.getString("data");
         int logonId = Integer.parseInt(list.substring(1,list.length()-1));
-        System.out.println("Logon");
-        System.out.println(logonId);
         return logonId;
 
 //        String result1=Connection("http://114.212.242.163:5000/getList/510050.SH/2020-09-22");
@@ -477,7 +473,6 @@ public class OptionServiceImpl implements OptionService {
                 "\"logonId\": \"" + logonId + "\"\n" +
                 "}";
         String res = postConnection("http://114.212.242.163:5000/trade/tlogout",param);
-        System.out.println("Logout");
-        System.out.println(res);
+        //System.out.println(res);
     }
 }
