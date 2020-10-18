@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.Huaqi.data.OptionMapper">
+
+    <insert id="addOption">
+        insert into option_list (option_code, option_name, option_var, us_code, us_name, exe_type, strike_price, strike_month, call_put, first_tradedate, last_tradedate, change_percent, amount, pre_settle, open_price, highest, lowest, close_price, settlement_price, volume, position_vol, up_limit_price, down_limit_price, delta, gamma, vega, theta, rho, in_value, time_value, update_time, valid)
+        VALUES
+    </insert>
+</mapper>
