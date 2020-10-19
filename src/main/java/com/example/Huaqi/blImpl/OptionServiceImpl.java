@@ -1,6 +1,8 @@
 package com.example.Huaqi.blImpl;
 
 import com.example.Huaqi.bl.OptionService;
+import com.example.Huaqi.data.OptionMapper;
+import com.example.Huaqi.po.OptionPO;
 import com.example.Huaqi.vo.CallOptionVO;
 import com.example.Huaqi.vo.PutOptionVO;
 import com.example.Huaqi.vo.ResponseVO;
@@ -34,6 +36,10 @@ import java.util.stream.Collectors;
  */
 @Service
 public class OptionServiceImpl implements OptionService {
+
+    @Autowired
+    OptionMapper optionMapper;
+
     List<CallOptionVO>Calls=new ArrayList<CallOptionVO>();
     List<PutOptionVO>Puts=new ArrayList<PutOptionVO>();
     ExecutorService service =Executors.newCachedThreadPool();
@@ -472,5 +478,15 @@ public class OptionServiceImpl implements OptionService {
                 "}";
         String res = postConnection("http://114.212.242.163:5000/trade/tlogout",param);
         //System.out.println(res);
+    }
+
+    @Override
+    public ResponseVO getOptionByETFCode(String code) {
+        List<OptionPO> options = optionMapper.getOptionByETF(code);
+        if(options.size()==0) {
+            return ResponseVO.buildFailure("No Option Found");
+        }else {
+            return ResponseVO.buildSuccess(options);
+        }
     }
 }

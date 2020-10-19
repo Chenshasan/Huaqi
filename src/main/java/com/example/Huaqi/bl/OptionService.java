@@ -39,4 +39,18 @@ public interface OptionService {
      * @return
      */
     void logout(int logonId);
+
+    /**
+     * 根据标的物ETF_code 检索对应期权列表
+     * @param code
+     * @return
+     */
+    ResponseVO getOptionByETFCode(String code);
+
+    /**
+     * 计算Delta曲线
+     * @param code
+     * @return
+     */
+    ResponseVO getDeltaCurve(String code);
 }
