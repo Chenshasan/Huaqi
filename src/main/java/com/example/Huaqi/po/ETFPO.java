@@ -13,7 +13,6 @@ public class ETFPO {
     Double rt_amt;
     Double option_vol;
     Double option_op;
-    Double option_vol_pcf;
     Integer valid;
     String update_time;
 
@@ -113,14 +112,6 @@ public class ETFPO {
         this.option_op = option_op;
     }
 
-    public Double getOption_vol_pcf() {
-        return option_vol_pcf;
-    }
-
-    public void setOption_vol_pcf(Double option_vol_pcf) {
-        this.option_vol_pcf = option_vol_pcf;
-    }
-
     public Integer getValid() {
         return valid;
     }
@@ -152,7 +143,6 @@ public class ETFPO {
                 ", rt_amt=" + rt_amt +
                 ", option_vol=" + option_vol +
                 ", option_op=" + option_op +
-                ", option_vol_pcf=" + option_vol_pcf +
                 ", valid=" + valid +
                 ", update_time='" + update_time + '\'' +
                 '}';

@@ -15,7 +15,6 @@ public class ETFVO {
     Double rt_amt;
     Double option_vol;
     Double option_op;
-    Double option_vol_pcf;
     Integer valid;
     String update_time;
 
@@ -113,14 +112,6 @@ public class ETFVO {
 
     public void setOption_op(Double option_op) {
         this.option_op = option_op;
-    }
-
-    public Double getOption_vol_pcf() {
-        return option_vol_pcf;
-    }
-
-    public void setOption_vol_pcf(Double option_vol_pcf) {
-        this.option_vol_pcf = option_vol_pcf;
     }
 
     public Integer getValid() {

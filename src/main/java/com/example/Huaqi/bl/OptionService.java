@@ -53,4 +53,12 @@ public interface OptionService {
      * @return
      */
     ResponseVO getDeltaCurve(String code);
+
+    /**
+     * 计算时间价值曲线
+     * @param code
+     * @return
+     */
+    ResponseVO getTimeValueCurve(String code);
+
 }

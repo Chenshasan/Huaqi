@@ -24,12 +24,7 @@ public class OptionPO {
     private Double settlement_price;
     private Integer volume;
     private Integer position;
-    private Double up_limit_price;
-    private Double down_limit_price;
     private Double delta;
-    private Double vega;
-    private Double rho;
-    private Double theta;
     private Double in_value;
     private Double time_value;
     private Integer valid;
@@ -219,52 +214,12 @@ public class OptionPO {
         this.position = position;
     }
 
-    public Double getUp_limit_price() {
-        return up_limit_price;
-    }
-
-    public void setUp_limit_price(Double up_limit_price) {
-        this.up_limit_price = up_limit_price;
-    }
-
-    public Double getDown_limit_price() {
-        return down_limit_price;
-    }
-
-    public void setDown_limit_price(Double down_limit_price) {
-        this.down_limit_price = down_limit_price;
-    }
-
     public Double getDelta() {
         return delta;
     }
 
     public void setDelta(Double delta) {
         this.delta = delta;
-    }
-
-    public Double getVega() {
-        return vega;
-    }
-
-    public void setVega(Double vega) {
-        this.vega = vega;
-    }
-
-    public Double getRho() {
-        return rho;
-    }
-
-    public void setRho(Double rho) {
-        this.rho = rho;
-    }
-
-    public Double getTheta() {
-        return theta;
-    }
-
-    public void setTheta(Double theta) {
-        this.theta = theta;
     }
 
     public Double getIn_value() {
@@ -325,12 +280,7 @@ public class OptionPO {
                 ", settlement_price=" + settlement_price +
                 ", volume=" + volume +
                 ", position=" + position +
-                ", up_limit_price=" + up_limit_price +
-                ", down_limit_price=" + down_limit_price +
                 ", delta=" + delta +
-                ", vega=" + vega +
-                ", rho=" + rho +
-                ", theta=" + theta +
                 ", in_value=" + in_value +
                 ", time_value=" + time_value +
                 ", valid=" + valid +

@@ -4,8 +4,8 @@
 
 
     <insert id="addETF" parameterType="com.example.Huaqi.po.ETFPO">
-        insert into etf(etf_code, etf_name, rt_last, rt_chg, rt_pcg_chg, rt_open, rt_high, rt_low, rt_vol, rt_amt, option_vol, option_op, option_vol_pcf, valid, update_time)
-        values (#{etf_code},#{etf_name},#{rt_last},#{rt_chg},#{rt_pcg_chg},#{rt_open},#{rt_high},#{rt_low},#{rt_vol},#{rt_amt},#{option_vol},#{option_op},#{option_vol_pcf},#{valid},#{update_time})
+        insert into etf(etf_code, etf_name, rt_last, rt_chg, rt_pcg_chg, rt_open, rt_high, rt_low, rt_vol, rt_amt, option_vol, option_op, valid, update_time)
+        values (#{etf_code},#{etf_name},#{rt_last},#{rt_chg},#{rt_pcg_chg},#{rt_open},#{rt_high},#{rt_low},#{rt_vol},#{rt_amt},#{option_vol},#{option_op},#{valid},#{update_time})
     </insert>
     <update id="updateETF" parameterType="com.example.Huaqi.po.ETFPO">
         update etf set
@@ -19,7 +19,6 @@
         rt_amt=#{rt_amt},
         option_vol=#{option_vol},
         option_op=#{option_op},
-        option_vol_pcf=#{option_vol_pcf},
         valid=#{valid}
         where etf_code=#{etf_code}
     </update>

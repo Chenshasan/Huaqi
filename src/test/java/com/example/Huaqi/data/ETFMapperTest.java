@@ -19,7 +19,7 @@ public class ETFMapperTest {
     public void testETFMapper(){
         ETFPO etfpo = etfMapper.getAllETF().get(0);
         System.out.println(etfpo);
-        etfpo.setOption_vol_pcf(1234.5);
+        etfpo.setRt_chg(111.);
         etfMapper.updateETF(etfpo);
         etfpo = etfMapper.getAllETF().get(0);
         System.out.println(etfpo);

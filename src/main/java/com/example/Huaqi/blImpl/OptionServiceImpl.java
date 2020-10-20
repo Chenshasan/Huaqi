@@ -3,9 +3,7 @@ package com.example.Huaqi.blImpl;
 import com.example.Huaqi.bl.OptionService;
 import com.example.Huaqi.data.OptionMapper;
 import com.example.Huaqi.po.OptionPO;
-import com.example.Huaqi.vo.CallOptionVO;
-import com.example.Huaqi.vo.PutOptionVO;
-import com.example.Huaqi.vo.ResponseVO;
+import com.example.Huaqi.vo.*;
 import org.apache.http.HttpEntity;
 import org.apache.http.ParseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -487,6 +485,79 @@ public class OptionServiceImpl implements OptionService {
             return ResponseVO.buildFailure("No Option Found");
         }else {
             return ResponseVO.buildSuccess(options);
+        }
+    }
+
+    @Override
+    public ResponseVO getDeltaCurve(String code) {
+        List<OptionPO> options = optionMapper.getOptionByETF(code);
+        if(options.size()==0) {
+            return ResponseVO.buildFailure("No Option Found");
+        }else {
+            // create curve
+            HashMap<String,Object> res = new HashMap<>();
+            // 认购
+            HashMap<String,ArrayList<DeltaVO>> call = new HashMap<>();
+            HashMap<String,ArrayList<DeltaVO>> put = new HashMap<>();
+            for (OptionPO option:options){
+                DeltaVO deltaVO = new DeltaVO(option.getStrike_price(),option.getDelta());
+                String month = option.getLast_tradedate().substring(0,10).replace("-","");
+                ArrayList<DeltaVO> target = new ArrayList<>();
+                if(option.getCall_put().equals("认购")){
+                    if(call.containsKey(month)) {
+                        target = call.get(month);
+                    }else {
+                        call.put(month, target);
+                    }
+                }else { // 认沽
+                    if(put.containsKey(month)) {
+                        target = put.get(month);
+                    }else {
+                        put.put(month, target);
+                    }
+                }
+                target.add(deltaVO);
+
+            }
+            res.put("认购",call);
+            res.put("认沽",put);
+            return ResponseVO.buildSuccess(res);
+        }
+    }
+
+    @Override
+    public ResponseVO getTimeValueCurve(String code) {
+        List<OptionPO> options = optionMapper.getOptionByETF(code);
+        if(options.size()==0) {
+            return ResponseVO.buildFailure("No Option Found");
+        }else {
+            // create curve
+            HashMap<String,Object> res = new HashMap<>();
+            // 认购
+            HashMap<String,ArrayList<TimeValueVO>> call = new HashMap<>();
+            HashMap<String,ArrayList<TimeValueVO>> put = new HashMap<>();
+            for (OptionPO option:options){
+                TimeValueVO timeValueVO = new TimeValueVO(option.getStrike_price(),option.getTime_value());
+                String month = option.getLast_tradedate().substring(0,10).replace("-","");
+                ArrayList<TimeValueVO> target = new ArrayList<>();
+                if(option.getCall_put().equals("认购")){
+                    if(call.containsKey(month)) {
+                        target = call.get(month);
+                    }else {
+                        call.put(month, target);
+                    }
+                }else { // 认沽
+                    if(put.containsKey(month)) {
+                        target = put.get(month);
+                    }else {
+                        put.put(month, target);
+                    }
+                }
+                target.add(timeValueVO);
+            }
+            res.put("认购",call);
+            res.put("认沽",put);
+            return ResponseVO.buildSuccess(res);
         }
     }
 }

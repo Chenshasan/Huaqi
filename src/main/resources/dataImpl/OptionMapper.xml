@@ -3,8 +3,8 @@
 <mapper namespace="com.example.Huaqi.data.OptionMapper">
 
     <insert id="addOption" parameterType="com.example.Huaqi.po.OptionPO">
-      insert into option_list(option_code, option_name, option_var, us_code, us_name, exe_type, strike_price, strike_month, call_put, first_tradedate, last_tradedate, change_percent, amount, pre_settle, open_price, highest, lowest, close_price, settlement_price, volume, position_vol, up_limit_price, down_limit_price, delta, gamma, vega, theta, rho, in_value, time_value, update_time, valid)
-      values (#{option_code},#{option_name},#{option_var},#{us_code},#{us_name},#{exe_type},#{strike_price},#{strike_month},#{call_put},#{first_tradedate},#{last_tradedate},#{change_percent},#{amount},#{pre_settle},#{open_price},#{highest},#{lowest},#{close_price},#{settlement_price},#{volume},#{position_vol},#{up_limit_price},#{down_limit_price},#{delta},#{gamma},#{vega},#{theta},#{rho},#{in_value},#{time_value},#{update_time},#{valid})
+      insert into option_list(option_code, option_name, option_var, us_code, us_name, exe_type, strike_price, strike_month, call_put, first_tradedate, last_tradedate, change_percent, amount, pre_settle, open_price, highest, lowest, close_price, settlement_price, volume, position_vol, delta, in_value, time_value, update_time, valid)
+      values (#{option_code},#{option_name},#{option_var},#{us_code},#{us_name},#{exe_type},#{strike_price},#{strike_month},#{call_put},#{first_tradedate},#{last_tradedate},#{change_percent},#{amount},#{pre_settle},#{open_price},#{highest},#{lowest},#{close_price},#{settlement_price},#{volume},#{position_vol},#{delta},#{in_value},#{time_value},#{update_time},#{valid})
     </insert>
     <update id="updateOption" parameterType="com.example.Huaqi.po.OptionPO">
         update option_list set
@@ -18,13 +18,7 @@
           settlement_price=#{settlement_price},
           volume=#{volume},
           position_vol=#{position_vol},
-          up_limit_price=#{up_limit_price},
-          down_limit_price=#{down_limit_price},
           delta=#{delta},
-          gamma=#{gamma},
-          vega=#{vega},
-          theta=#{theta},
-          rho=#{rho},
           in_value=#{in_value},
           time_value=#{time_value},
           update_time=#{update_time},

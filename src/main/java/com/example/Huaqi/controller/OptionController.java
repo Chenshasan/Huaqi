@@ -25,5 +25,8 @@ public class OptionController {
         return optionService.getDeltaCurve(etfcode);
     }
 
-
+    @GetMapping("timeValueCurve")
+    public ResponseVO getTimeValueCurve(String etfcode){
+        return optionService.getTimeValueCurve(etfcode);
+    }
 }
