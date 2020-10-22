@@ -28,4 +28,13 @@
     <select id="getOptionByETF" resultType="com.example.Huaqi.po.OptionPO">
         select * from option_list where us_code=#{code} and valid=1
     </select>
+    <select id="getCallOptionByETF" resultType="com.example.Huaqi.po.OptionPO">
+        select * from option_list where us_code=#{code} and valid=1 and call_put='认购'
+    </select>
+    <select id="getPutOptionByETF" resultType="com.example.Huaqi.po.OptionPO">
+        select * from option_list where us_code=#{code} and valid=1 and call_put='认沽'
+    </select>
+    <select id="getTradeDate" resultType="java.lang.String">
+        select distinct last_tradedate from option_list where us_code=#{code} and valid=1
+    </select>
 </mapper>

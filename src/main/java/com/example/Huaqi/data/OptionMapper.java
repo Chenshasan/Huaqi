@@ -14,6 +14,12 @@ public interface OptionMapper {
 
     List<OptionPO> getOptionByETF(@Param("code") String code);
 
+    List<OptionPO> getCallOptionByETF(@Param("code") String code);
+
+    List<OptionPO> getPutOptionByETF(@Param("code") String code);
+
+    List<String> getTradeDate(@Param("code") String code);
+
     int updateOption(OptionPO option);
 
 

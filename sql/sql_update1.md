@@ -4,23 +4,22 @@
 
 ### etf
 
-| column         | name       | type        | 备注            |
-| -------------- | ---------- | ----------- | --------------- |
-| etf_code       | 键         | varchar(32) | key,510050.SH   |
-| etf_name       | 期权名词   | varchar(32) | 如华夏上证50ETF |
-| rt_last        | 现价       | double      |                 |
-| rt_chg         | 涨跌       | double      |                 |
-| rt_pcg_chg     | 涨跌幅     | double      |                 |
-| rt_open        | 今开       | double      |                 |
-| rt_high        | 最高       | double      |                 |
-| rt_low         | 最低       | double      |                 |
-| rt_vol         | 成交量     | double      |                 |
-| rt_amt         | 成交额     | double      |                 |
-| option_vol     | 期权成交量 | double      | wss             |
-| option_op      | 期权持仓量 | double      | wss             |
-| option_vol_pcf | 成交量PCF  | double      |                 |
-| valid          | 有效位     | int         | 1有效，0无效    |
-| update_time    | 更新时间   | datetime    |                 |
+| column      | name       | type        | 备注            |
+| ----------- | ---------- | ----------- | --------------- |
+| etf_code    | 键         | varchar(32) | key,510050.SH   |
+| etf_name    | 期权名词   | varchar(32) | 如华夏上证50ETF |
+| rt_last     | 现价       | double      |                 |
+| rt_chg      | 涨跌       | double      |                 |
+| rt_pcg_chg  | 涨跌幅     | double      |                 |
+| rt_open     | 今开       | double      |                 |
+| rt_high     | 最高       | double      |                 |
+| rt_low      | 最低       | double      |                 |
+| rt_vol      | 成交量     | double      |                 |
+| rt_amt      | 成交额     | double      |                 |
+| option_vol  | 期权成交量 | double      | wss             |
+| option_op   | 期权持仓量 | double      | wss             |
+| valid       | 有效位     | int         | 1有效，0无效    |
+| update_time | 更新时间   | datetime    |                 |
 
 ```
 data = w.wsq("510050.SH", "rt_last,rt_chg,rt_pct_chg,rt_open,rt_high,rt_low,rt_vol,rt_amt,rt_opt_vs")
@@ -72,13 +71,7 @@ w.wset("optionchain","date=2020-10-17;us_code=510050.SH;option_var=全部;call_p
 | settlement_price | 结算价   | double   |                       |
 | volume           | 成交量   | int      |                       |
 | position_vol     | 持仓量   | int      | 总和=etf中的option_op |
-| up_limit_price   | 涨停价格 | double   |                       |
-| down_limit_price | 跌停价格 | double   |                       |
 | delta            |          | double   |                       |
-| gamma            |          | double   |                       |
-| vega             |          | double   |                       |
-| theta            |          | double   |                       |
-| rho              |          | double   |                       |
 | in_value         | 内在价值 | double   | from wss              |
 | time_value       | 时间价值 | double   | from wss              |
 | update_time      | 更新日期 | datetime |                       |
@@ -90,6 +83,8 @@ w.wss("10002477.SH,10002478.SH,10002479.SH,10002480.SH,10002481.SH,10002482.SH,1
 ```
 
 ![image-20201017235759039](https://img2020.cnblogs.com/blog/1958143/202010/1958143-20201018101851946-2054498818.png)
+
+### option_
 
 ### strategy
 
