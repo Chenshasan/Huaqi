@@ -3,8 +3,19 @@ package com.example.Huaqi.vo;
 import java.util.Date;
 
 public class OptionVO implements Comparable<OptionVO> {
-    String optioncode; //唯一标识符
-    String name;//期权名
+    String optioncode; //唯一标识符 option_code
+    String name;//期权名 option_name
+    String option_var; // 期权品种
+    String us_code; // 标的物代码
+    String us_name; // 标的物名
+    String exe_type; // 期权类型
+    String month; // 交割月份
+    String call_put; // 期权类型 认购or认沽
+    String etf_price; //ETF价格
+    String expiredate; // 剩余存续期
+    String first_tradedate; // 起始交易日期
+    String last_tradedate; // 最后交易日期
+
     double price;//期权价格
     double execPrice;//执行价格
     String ETFName;
@@ -292,6 +303,86 @@ public class OptionVO implements Comparable<OptionVO> {
 
     public void setTimeprice(double timeprice) {
         this.timeprice = timeprice;
+    }
+
+    public String getOption_var() {
+        return option_var;
+    }
+
+    public void setOption_var(String option_var) {
+        this.option_var = option_var;
+    }
+
+    public String getUs_code() {
+        return us_code;
+    }
+
+    public void setUs_code(String us_code) {
+        this.us_code = us_code;
+    }
+
+    public String getUs_name() {
+        return us_name;
+    }
+
+    public void setUs_name(String us_name) {
+        this.us_name = us_name;
+    }
+
+    public String getExe_type() {
+        return exe_type;
+    }
+
+    public void setExe_type(String exe_type) {
+        this.exe_type = exe_type;
+    }
+
+    public String getMonth() {
+        return month;
+    }
+
+    public void setMonth(String month) {
+        this.month = month;
+    }
+
+    public String getCall_put() {
+        return call_put;
+    }
+
+    public void setCall_put(String call_put) {
+        this.call_put = call_put;
+    }
+
+    public String getEtf_price() {
+        return etf_price;
+    }
+
+    public void setEtf_price(String etf_price) {
+        this.etf_price = etf_price;
+    }
+
+    public String getExpiredate() {
+        return expiredate;
+    }
+
+    public void setExpiredate(String expiredate) {
+        this.expiredate = expiredate;
+    }
+
+    public String getFirst_tradedate() {
+        return first_tradedate;
+    }
+
+    public void setFirst_tradedate(String first_tradedate) {
+        this.first_tradedate = first_tradedate;
+    }
+
+    public String getLast_tradedate() {
+        return last_tradedate;
+    }
+
+    public void setLast_tradedate(String last_tradedate) {
+        this.last_tradedate = last_tradedate;
     }
 
     //把List按时间价值的升序排列，能顺序向上取到

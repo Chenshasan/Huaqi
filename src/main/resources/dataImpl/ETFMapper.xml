@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.Huaqi.data.ETFMapper">
+
+
+    <insert id="addETF" parameterType="com.example.Huaqi.po.ETFPO">
+        insert into etf(etf_code, etf_name, rt_last, rt_chg, rt_pcg_chg, rt_open, rt_high, rt_low, rt_vol, rt_amt, option_vol, option_op, valid, update_time)
+        values (#{etf_code},#{etf_name},#{rt_last},#{rt_chg},#{rt_pcg_chg},#{rt_open},#{rt_high},#{rt_low},#{rt_vol},#{rt_amt},#{option_vol},#{option_op},#{valid},#{update_time})
+    </insert>
+    <update id="updateETF" parameterType="com.example.Huaqi.po.ETFPO">
+        update etf set
+        rt_last=#{rt_last},
+        rt_chg=#{rt_chg},
+        rt_pcg_chg=#{rt_pcg_chg},
+        rt_open=#{rt_open},
+        rt_high=#{rt_high},
+        rt_low=#{rt_low},
+        rt_vol=#{rt_vol},
+        rt_amt=#{rt_amt},
+        option_vol=#{option_vol},
+        option_op=#{option_op},
+        valid=#{valid}
+        where etf_code=#{etf_code}
+    </update>
+    <select id="getAllETF" resultType="com.example.Huaqi.po.ETFPO">
+        select * from etf where valid='1'
+    </select>
+</mapper>

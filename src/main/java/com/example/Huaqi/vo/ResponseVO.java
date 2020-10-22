@@ -1,5 +1,7 @@
 package com.example.Huaqi.vo;
 
+import com.example.Huaqi.enums.ResponseCode;
+
 /**
  * @author fjj
  * @date 2019/3/12 5:14 PM
@@ -9,7 +11,7 @@ public class ResponseVO {
     /**
      * 调用是否成功
      */
-    private Boolean success;
+    private Integer code;
 
     /**
      * 返回的提示信息
@@ -19,35 +21,36 @@ public class ResponseVO {
     /**
      * 内容
      */
-    private Object content;
+    private Object data;
 
     public static ResponseVO buildSuccess(){
         ResponseVO response=new ResponseVO();
-        response.setSuccess(true);
+        response.setCode(ResponseCode.Success.getCode());
+        response.setData("");
         return response;
     }
 
     public static ResponseVO buildSuccess(Object content){
         ResponseVO response=new ResponseVO();
-        response.setContent(content);
-        response.setSuccess(true);
+        response.setData(content);
+        response.setCode(ResponseCode.Success.getCode());
         return response;
     }
 
     public static ResponseVO buildFailure(String message){
         ResponseVO response=new ResponseVO();
-        response.setSuccess(false);
+        response.setCode(ResponseCode.Failure.getCode());
         response.setMessage(message);
         System.out.println(message);
         return response;
     }
 
-    public boolean getSuccess() {
-        return success;
+    public Integer getCode() {
+        return code;
     }
 
-    public void setSuccess(boolean success) {
-        this.success = success;
+    public void setCode(Integer code) {
+        this.code = code;
     }
 
     public String getMessage() {
@@ -58,11 +61,11 @@ public class ResponseVO {
         this.message = message;
     }
 
-    public Object getContent() {
-        return content;
+    public Object getData() {
+        return data;
     }
 
-    public void setContent(Object content) {
-        this.content = content;
+    public void setData(Object data) {
+        this.data = data;
     }
 }

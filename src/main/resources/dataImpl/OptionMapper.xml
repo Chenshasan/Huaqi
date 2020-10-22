@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.Huaqi.data.OptionMapper">
+
+    <insert id="addOption" parameterType="com.example.Huaqi.po.OptionPO">
+      insert into option_list(option_code, option_name, option_var, us_code, us_name, exe_type, strike_price, strike_month, call_put, first_tradedate, last_tradedate, change_percent, amount, pre_settle, open_price, highest, lowest, close_price, settlement_price, volume, position_vol, delta, in_value, time_value, update_time, valid)
+      values (#{option_code},#{option_name},#{option_var},#{us_code},#{us_name},#{exe_type},#{strike_price},#{strike_month},#{call_put},#{first_tradedate},#{last_tradedate},#{change_percent},#{amount},#{pre_settle},#{open_price},#{highest},#{lowest},#{close_price},#{settlement_price},#{volume},#{position_vol},#{delta},#{in_value},#{time_value},#{update_time},#{valid})
+    </insert>
+    <update id="updateOption" parameterType="com.example.Huaqi.po.OptionPO">
+        update option_list set
+          change_percent=#{change_percent},
+          amount=#{amount},
+          pre_settle=#{pre_settle},
+          open_price=#{open_price},
+          highest=#{highest},
+          lowest=#{lowest},
+          close_price=#{close_price},
+          settlement_price=#{settlement_price},
+          volume=#{volume},
+          position_vol=#{position_vol},
+          delta=#{delta},
+          in_value=#{in_value},
+          time_value=#{time_value},
+          update_time=#{update_time},
+          valid=#{valid}
+        where option_code=#{option_code}
+    </update>
+    <select id="getOptionByETF" resultType="com.example.Huaqi.po.OptionPO">
+        select * from option_list where us_code=#{code} and valid=1
+    </select>
+</mapper>
