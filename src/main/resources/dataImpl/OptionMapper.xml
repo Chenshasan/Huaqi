@@ -25,16 +25,24 @@
           valid=#{valid}
         where option_code=#{option_code}
     </update>
-    <select id="getOptionByETF" resultType="com.example.Huaqi.po.OptionPO">
+    <select id="getOptionByETF" resultType="com.example.Huaqi.po.OptionPO" resultMap="Option">
         select * from option_list where us_code=#{code} and valid=1
     </select>
-    <select id="getCallOptionByETF" resultType="com.example.Huaqi.po.OptionPO">
+    <select id="getCallOptionByETF" resultType="com.example.Huaqi.po.OptionPO" resultMap="Option">
         select * from option_list where us_code=#{code} and valid=1 and call_put='认购'
     </select>
-    <select id="getPutOptionByETF" resultType="com.example.Huaqi.po.OptionPO">
+    <select id="getPutOptionByETF" resultType="com.example.Huaqi.po.OptionPO" resultMap="Option">
         select * from option_list where us_code=#{code} and valid=1 and call_put='认沽'
     </select>
     <select id="getTradeDate" resultType="java.lang.String">
         select distinct last_tradedate from option_list where us_code=#{code} and valid=1
     </select>
+
+    <resultMap id="Option" type="com.example.Huaqi.po.OptionPO">
+        <result column="strike_month" property="month"/>
+        <result column="change_percent" property="change"/>
+        <result column="close_price" property="close"/>
+        <result column="position_vol" property="position"/>
+        <result column="open_price" property="open"/>
+    </resultMap>
 </mapper>
