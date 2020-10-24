@@ -25,6 +25,10 @@
 
 		* `StrategyMapper.addStrategy`
 		* `TradeMapper.addTrade`
+		
+	* 获取当月时间价值最小的期权
+	
+		* 还没写，利用getMonthOption接口在Service层实现下吧
 
 > 开发环境中，记得先注意运行.sql运行
 >
