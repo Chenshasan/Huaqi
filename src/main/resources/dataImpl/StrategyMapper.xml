@@ -3,6 +3,18 @@
 <mapper namespace="com.example.Huaqi.data.StrategyMapper">
 
     <insert id="addStrategy" parameterType="com.example.Huaqi.po.StrategyPO">
-        insert into strategy(deal_type, "time", status, volume, price_per, transfer_fee, price, trade_id, item)
+        insert into strategy(deal_type, deal_time, status, volume, price_per, transfer_fee, price, trade_id, item)
+        values (#{dealType},#{dealTime},#{status},#{volume},#{pricePer},#{transferFee},#{price},#{tradeId},#{item})
     </insert>
+    <select id="getStrategiesByTradeId" resultMap="Strategy">
+        select * from strategy where trade_id=#{tradeId}
+    </select>
+
+    <resultMap id="Strategy" type="com.example.Huaqi.po.StrategyPO">
+        <result column="deal_time" property="dealTime"/>
+        <result column="deal_type" property="dealType"/>
+        <result column="price_per" property="pricePer"/>
+        <result column="transfer_fee" property="transferFee"/>
+        <result column="trade_id" property="tradeId"/>
+    </resultMap>
 </mapper>

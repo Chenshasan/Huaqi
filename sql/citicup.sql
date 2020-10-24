@@ -198,7 +198,7 @@ CREATE TABLE `strategy` (
   `status` varchar(32) NOT NULL,
   `volume` double NOT NULL,
   `price_per` double NOT NULL,
-  `transfer_fee` int NOT NULL,
+  `transfer_fee` double NOT NULL,
   `price` double NOT NULL,
   `trade_id` int(11) NOT NULL,
   `item` varchar(64) NOT NULL,

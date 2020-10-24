@@ -3,10 +3,10 @@ package com.example.Huaqi.po;
 public class StrategyPO {
     private int id;
     private String dealType;
-    private String time;
+    private String dealTime;
     private String status;
     private Double volume;
-    private Integer transferFee;
+    private Double transferFee;
     private Double pricePer;
     private Double price;
     private Integer tradeId;
@@ -28,12 +28,12 @@ public class StrategyPO {
         this.dealType = dealType;
     }
 
-    public String getTime() {
-        return time;
+    public String getDealTime() {
+        return dealTime;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public void setDealTime(String dealTime) {
+        this.dealTime = dealTime;
     }
 
     public String getStatus() {
@@ -52,11 +52,11 @@ public class StrategyPO {
         this.volume = volume;
     }
 
-    public Integer getTransferFee() {
+    public Double getTransferFee() {
         return transferFee;
     }
 
-    public void setTransferFee(Integer transferFee) {
+    public void setTransferFee(Double transferFee) {
         this.transferFee = transferFee;
     }
 
@@ -97,7 +97,7 @@ public class StrategyPO {
         return "StrategyPO{" +
                 "id=" + id +
                 ", dealType='" + dealType + '\'' +
-                ", time='" + time + '\'' +
+                ", dealTime='" + dealTime + '\'' +
                 ", status='" + status + '\'' +
                 ", volume=" + volume +
                 ", transferFee=" + transferFee +
