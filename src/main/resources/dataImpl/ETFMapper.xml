@@ -25,4 +25,7 @@
     <select id="getAllETF" resultType="com.example.Huaqi.po.ETFPO">
         select * from etf where valid='1'
     </select>
+    <select id="currentETF" resultType="com.example.Huaqi.po.ETFPO">
+        select * from etf where etf_code=#{code}
+    </select>
 </mapper>

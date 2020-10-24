@@ -37,6 +37,12 @@
     <select id="getTradeDate" resultType="java.lang.String">
         select distinct last_tradedate from option_list where us_code=#{code} and valid=1
     </select>
+    <select id="currentOption" resultType="com.example.Huaqi.po.OptionPO" resultMap="Option">
+        select * from option_list where option_code=#{code}
+    </select>
+    <select id="getMonthOption" resultType="com.example.Huaqi.po.OptionPO" resultMap="Option">
+        select * from option_list where valid=1 and last_tradedate like concat(#{month,jdbcType=VARCHAR},'%')
+    </select>
 
     <resultMap id="Option" type="com.example.Huaqi.po.OptionPO">
         <result column="strike_month" property="month"/>

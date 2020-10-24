@@ -94,14 +94,14 @@ w.wss("10002477.SH,10002478.SH,10002479.SH,10002480.SH,10002481.SH,10002482.SH,1
 | ------------ | ------------------ | ----------- | ------------------------------------------------------------ |
 | id           | 键                 | int         | key                                                          |
 | deal_type    | 类型               | varchar(32) | Buy_Put:购买认沽期权<br/>Buy_Call: 购买认购期权<br/>Exec_Option: 行权<br/>Sell_Call: 卖出认购期权<br/>Sell_Put: 卖出认沽期权<br/>Sell_50ETF: 卖出50ETF<br/>Buy_50ETF: 买入50ETF |
-| time         | 时间               | datetime    |                                                              |
+| deal_time    | 时间               | datetime    |                                                              |
 | status       | 状态               | varchar(32) | Success/Failed                                               |
-| volume       | 份数               | float       |                                                              |
-| transfer_fee | 手续费             | int         |                                                              |
-| price_per    | 每份价             | float       |                                                              |
-| price        | 总价               | float       |                                                              |
+| volume       | 份数               | double      |                                                              |
+| transfer_fee | 手续费             | double      |                                                              |
+| price_per    | 每份价             | double      |                                                              |
+| price        | 总价               | double      |                                                              |
 | trade_id     | 属于哪次交易的买卖 | int         | 外键                                                         |
-| item         | 买卖的物品         | varchar(64) | ??                                                           |
+| item         | 买卖的物品         | varchar(64) | 10002423.SH                                                  |
 
 
 
@@ -116,21 +116,9 @@ w.wss("10002477.SH,10002478.SH,10002479.SH,10002480.SH,10002481.SH,10002482.SH,1
 | start_time | 开始时间 | datetime    |                                                     |
 | end_time   | 结束时间 | datetime    | 未结束时可为空                                      |
 | status     | 状态     | varchar(32) | Pending:正在进行<br/>Success: 成功<br/>Failed: 失败 |
-| profit     | 收益     | float       | 未结束时可为空                                      |
+| profit     | 收益     | double      | 未结束时可为空                                      |
 
 
 
 
-
-* 当前最小时间价值的期权(当月到期)
-
-* currentETF
-
-* currentOption(optionCode)
-
-* `List<Option>   params(month)`某个月到期的期权list
-
-* 记录买卖
-
-	
 

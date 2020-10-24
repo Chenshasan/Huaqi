@@ -11,6 +11,13 @@ import java.util.List;
 @Repository
 public interface ETFMapper {
     /**
+     * 获得当前ETF数据
+     * @param etfcode 直接写死是510050.SH
+     * @return
+     */
+    ETFPO currentETF(@Param("code") String etfcode);
+
+    /**
      * 添加ETF
      * @return
      */

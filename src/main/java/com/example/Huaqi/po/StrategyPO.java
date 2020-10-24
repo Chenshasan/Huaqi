@@ -1,5 +1,8 @@
 package com.example.Huaqi.po;
 
+/**
+ * 买卖类，一次买卖
+ */
 public class StrategyPO {
     private int id;
     private String dealType;
