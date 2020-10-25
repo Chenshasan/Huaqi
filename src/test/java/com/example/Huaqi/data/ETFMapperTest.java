@@ -14,6 +14,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class ETFMapperTest {
     @Autowired
     ETFMapper etfMapper;
+    @Test
+    public void testCurrentEFT(){
+        ETFPO etfpo = etfMapper.currentETF("510050.SH");
+        System.out.println(etfpo);
+    }
 
     @Test
     public void testETFMapper(){

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.Huaqi.data.TradeMapper">
+
+    <insert id="addTrade" parameterType="com.example.Huaqi.po.TradePO">
+        insert  into  trade(trade_type, start_time, end_time, status, profit)
+        values (#{tradeType},#{startTime},#{endTime},#{status},#{profit})
+    </insert>
+
+
+    <resultMap id="Trade" type="com.example.Huaqi.po.TradePO">
+        <result column="trade_type" property="tradeType"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+    </resultMap>
+</mapper>

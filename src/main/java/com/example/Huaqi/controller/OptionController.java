@@ -16,8 +16,8 @@ public class OptionController {
     OptionService optionService;
 
     @GetMapping("getOptionByETF")
-    public ResponseVO getOptionByETF(String etfcode){
-        return optionService.getOptionByETFCode(etfcode);
+    public ResponseVO getOptionByETF(String etfcode,String type){
+        return optionService.getOptionByETFCode(etfcode,type);
     }
 
     @GetMapping("deltaCurve")
@@ -28,5 +28,10 @@ public class OptionController {
     @GetMapping("timeValueCurve")
     public ResponseVO getTimeValueCurve(String etfcode){
         return optionService.getTimeValueCurve(etfcode);
+    }
+
+    @GetMapping("tradeDate")
+    public ResponseVO getOptionTradeDate(String etfcode){
+        return optionService.getOptionTradeDate(etfcode);
     }
 }

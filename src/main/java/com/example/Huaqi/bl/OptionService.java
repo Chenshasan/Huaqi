@@ -45,7 +45,7 @@ public interface OptionService {
      * @param code
      * @return
      */
-    ResponseVO getOptionByETFCode(String code);
+    ResponseVO getOptionByETFCode(String code,String type);
 
     /**
      * 计算Delta曲线
@@ -61,4 +61,10 @@ public interface OptionService {
      */
     ResponseVO getTimeValueCurve(String code);
 
+    /**
+     * 获得期权的交割时间
+     * @param optionCode
+     * @return
+     */
+    ResponseVO getOptionTradeDate(String etfcode);
 }

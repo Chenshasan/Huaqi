@@ -10,8 +10,6 @@ public class OptionPO {
     private Double strike_price; // 行权价格
     private String month; // 交割月份
     private String call_put; // 期权类型 认购or认沽
-    private String etf_price; //ETF价格
-    private String expiredate; // 剩余存续期
     private String first_tradedate; // 起始交易日期
     private String last_tradedate; // 最后交易日期
     private Double change;
@@ -102,23 +100,7 @@ public class OptionPO {
         this.call_put = call_put;
     }
 
-    public String getEtf_price() {
-        return etf_price;
-    }
-
-    public void setEtf_price(String etf_price) {
-        this.etf_price = etf_price;
-    }
-
-    public String getExpiredate() {
-        return expiredate;
-    }
-
-    public void setExpiredate(String expiredate) {
-        this.expiredate = expiredate;
-    }
-
-    public String getFirst_tradedate() {
+       public String getFirst_tradedate() {
         return first_tradedate;
     }
 
@@ -266,8 +248,6 @@ public class OptionPO {
                 ", strike_price=" + strike_price +
                 ", month='" + month + '\'' +
                 ", call_put='" + call_put + '\'' +
-                ", etf_price='" + etf_price + '\'' +
-                ", expiredate='" + expiredate + '\'' +
                 ", first_tradedate='" + first_tradedate + '\'' +
                 ", last_tradedate='" + last_tradedate + '\'' +
                 ", change=" + change +

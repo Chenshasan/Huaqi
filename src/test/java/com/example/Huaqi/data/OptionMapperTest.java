@@ -18,6 +18,15 @@ public class OptionMapperTest {
     OptionMapper optionMapper;
 
     @Test
+    // 测试根据月份拿期权，主要是like
+    public void testGetMonthOption(){
+        List<OptionPO> optionPOS = optionMapper.getMonthOption("2020-10");
+        for (OptionPO optionPO:optionPOS) {
+            System.out.println(optionPO);
+        }
+    }
+
+    @Test
     public void testGetOptionByETF(){
         List<OptionPO> options = optionMapper.getOptionByETF("510050.SH");
         for (OptionPO optionPO:options) {

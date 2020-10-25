@@ -185,44 +185,6 @@ insert into option_list (us_code, us_name ,option_var, option_code, option_name,
 insert into option_list (us_code, us_name ,option_var, option_code, option_name, exe_type, strike_price, strike_month, call_put, first_tradedate, last_tradedate, change_percent, amount, pre_settle, open_price, highest, lowest, close_price, settlement_price, volume, position_vol, delta,  in_value, time_value, update_time, valid)values('510050.SH','华夏上证50ETF','510050OP.SH','10002768.SH','50ETF沽3月3.80','欧式',3.8,202103,'认沽','2020-08-05 00:00:00','2021-03-24 00:00:00',-2.36125126,336280.0,0.4955,0.4825,0.5061,0.4711,0.4838,0.4867,70.0,2730.0,-0.626,0.3679999999999999,0.11580000000000013,'2020-10-16',1);
 
 --
--- Table structure for table `option_stastics`
---
-
-DROP TABLE IF EXISTS `option_stastics`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `option_stastics` (
-  `option_code` varchar(32) NOT NULL,
-  `option_name` varchar(32) NOT NULL,
-  `exerciseprice` double NOT NULL,
-  `change` double NOT NULL,
-  `amount` int NOT NULL,
-  `pre_settle` double NOT NULL,
-  `open` double NOT NULL,
-  `highest` double NOT NULL,
-  `lowest` double NOT NULL,
-  `close` double NOT NULL,
-  `settlement_price` double NOT NULL,
-  `volume` int NOT NULL,
-  `position` int NOT NULL,
-  `up_limit_price` double NOT NULL,
-  `down_limit_price` double NOT NULL,
-  `delta` double NOT NULL,
-  `vega` double NOT NULL,
-  `rho` double NOT NULL,
-  `theta` double NOT NULL,
-  `in_value` double NOT NULL,
-  `time_value` double NOT NULL,
-  `update_time` datetime NOT NULL,
-  `valid` int NOT NULL,
-  PRIMARY KEY (`option_code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
-
-
-
---
 -- Table structure for table `strategy`
 --
 
@@ -232,18 +194,25 @@ DROP TABLE IF EXISTS `strategy`;
 CREATE TABLE `strategy` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `deal_type` varchar(32) NOT NULL,
-  `time` datetime NOT NULL,
+  `deal_time` datetime NOT NULL,
   `status` varchar(32) NOT NULL,
-  `volume` float NOT NULL,
-  `price_per` float NOT NULL,
-  `price` float NOT NULL,
+  `volume` double NOT NULL,
+  `price_per` double NOT NULL,
+  `transfer_fee` double NOT NULL,
+  `price` double NOT NULL,
   `trade_id` int(11) NOT NULL,
   `item` varchar(64) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
-
+insert into strategy(deal_type, deal_time, status, volume, price_per, transfer_fee, price, trade_id, item) values ('Buy_Put','2020-10-25 00:00:00','Success',5,100,100,-600,1,'10002423.SH');
+insert into strategy(deal_type, deal_time, status, volume, price_per, transfer_fee, price, trade_id, item) values ('Buy_Call','2020-10-25 00:00:00','Success',5,100,100,-600,1,'10002423.SH');
+insert into strategy(deal_type, deal_time, status, volume, price_per, transfer_fee, price, trade_id, item) values ('Exec_Option','2020-10-25 00:00:00','Success',10,100,100,900,1,'10002423.SH');
+insert into strategy(deal_type, deal_time, status, volume, price_per, transfer_fee, price, trade_id, item) values ('Sell_Put','2020-10-25 00:00:00','Success',5,100,100,400,1,'10002423.SH');
+insert into strategy(deal_type, deal_time, status, volume, price_per, transfer_fee, price, trade_id, item) values ('Sell_Call','2020-10-25 00:00:00','Success',5,100,100,400,1,'10002423.SH');
+insert into strategy(deal_type, deal_time, status, volume, price_per, transfer_fee, price, trade_id, item) values ('Sell_50ETF','2020-10-25 00:00:00','Success',5,100,100,400,1,'10002423.SH');
+insert into strategy(deal_type, deal_time, status, volume, price_per, transfer_fee, price, trade_id, item) values ('Buy_50ETF','2020-10-27 00:00:00','Success',5,100,100,-600,1,'10002423.SH');
 
 
 --
@@ -259,7 +228,8 @@ CREATE TABLE `trade` (
   `start_time` datetime NOT NULL,
   `end_time` datetime NOT NULL,
   `status` varchar(32) NOT NULL,
-  `profit` float NOT NULL,
+  `profit` double NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+insert into trade(trade_type, start_time, end_time, status, profit) values ('unknown','2020-10-25 00:00:00','2020-10-27 00:00:00','Success',8888);
