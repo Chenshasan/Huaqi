@@ -63,7 +63,7 @@ public interface OptionService {
 
     /**
      * 获得期权的交割时间
-     * @param optionCode
+     * @param etfcode
      * @return
      */
     ResponseVO getOptionTradeDate(String etfcode);

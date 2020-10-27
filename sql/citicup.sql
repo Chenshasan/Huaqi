@@ -188,10 +188,10 @@ insert into option_list (us_code, us_name ,option_var, option_code, option_name,
 -- Table structure for table `strategy`
 --
 
-DROP TABLE IF EXISTS `strategy`;
+DROP TABLE IF EXISTS `deal`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `strategy` (
+CREATE TABLE `deal` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `deal_type` varchar(32) NOT NULL,
   `deal_time` datetime NOT NULL,
@@ -202,17 +202,18 @@ CREATE TABLE `strategy` (
   `price` double NOT NULL,
   `trade_id` int(11) NOT NULL,
   `item` varchar(64) NOT NULL,
+  `option_name` varchar(64) NOT NULL
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
-insert into strategy(deal_type, deal_time, status, volume, price_per, transfer_fee, price, trade_id, item) values ('Buy_Put','2020-10-25 00:00:00','Success',5,100,100,-600,1,'10002423.SH');
-insert into strategy(deal_type, deal_time, status, volume, price_per, transfer_fee, price, trade_id, item) values ('Buy_Call','2020-10-25 00:00:00','Success',5,100,100,-600,1,'10002423.SH');
-insert into strategy(deal_type, deal_time, status, volume, price_per, transfer_fee, price, trade_id, item) values ('Exec_Option','2020-10-25 00:00:00','Success',10,100,100,900,1,'10002423.SH');
-insert into strategy(deal_type, deal_time, status, volume, price_per, transfer_fee, price, trade_id, item) values ('Sell_Put','2020-10-25 00:00:00','Success',5,100,100,400,1,'10002423.SH');
-insert into strategy(deal_type, deal_time, status, volume, price_per, transfer_fee, price, trade_id, item) values ('Sell_Call','2020-10-25 00:00:00','Success',5,100,100,400,1,'10002423.SH');
-insert into strategy(deal_type, deal_time, status, volume, price_per, transfer_fee, price, trade_id, item) values ('Sell_50ETF','2020-10-25 00:00:00','Success',5,100,100,400,1,'10002423.SH');
-insert into strategy(deal_type, deal_time, status, volume, price_per, transfer_fee, price, trade_id, item) values ('Buy_50ETF','2020-10-27 00:00:00','Success',5,100,100,-600,1,'10002423.SH');
+insert into deal(deal_type, deal_time, status, volume, price_per, transfer_fee, price, trade_id, item) values ('Buy_Put','2020-10-25 00:00:00','Success',5,100,100,-600,1,'10002423.SH');
+insert into deal(deal_type, deal_time, status, volume, price_per, transfer_fee, price, trade_id, item) values ('Buy_Call','2020-10-25 00:00:00','Success',5,100,100,-600,1,'10002423.SH');
+insert into deal(deal_type, deal_time, status, volume, price_per, transfer_fee, price, trade_id, item) values ('Exec_Option','2020-10-25 00:00:00','Success',10,100,100,900,1,'10002423.SH');
+insert into deal(deal_type, deal_time, status, volume, price_per, transfer_fee, price, trade_id, item) values ('Sell_Put','2020-10-25 00:00:00','Success',5,100,100,400,1,'10002423.SH');
+insert into deal(deal_type, deal_time, status, volume, price_per, transfer_fee, price, trade_id, item) values ('Sell_Call','2020-10-25 00:00:00','Success',5,100,100,400,1,'10002423.SH');
+insert into deal(deal_type, deal_time, status, volume, price_per, transfer_fee, price, trade_id, item) values ('Sell_50ETF','2020-10-25 00:00:00','Success',5,100,100,400,1,'10002423.SH');
+insert into deal(deal_type, deal_time, status, volume, price_per, transfer_fee, price, trade_id, item) values ('Buy_50ETF','2020-10-27 00:00:00','Success',5,100,100,-600,1,'10002423.SH');
 
 
 --
@@ -226,10 +227,12 @@ CREATE TABLE `trade` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `trade_type` varchar(32) NOT NULL,
   `start_time` datetime NOT NULL,
-  `end_time` datetime NOT NULL,
+  `end_time` datetime DEFAULT NULL,
   `status` varchar(32) NOT NULL,
   `profit` double NOT NULL,
+  `trade_name` varchar(32) NOT NULL,
+  `deal_num` int(11) DEFAULT 0
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-insert into trade(trade_type, start_time, end_time, status, profit) values ('unknown','2020-10-25 00:00:00','2020-10-27 00:00:00','Success',8888);
+insert into trade(trade_type, start_time, end_time, status, profit, trade_name, deal_num) values ('unknown','2020-10-25 00:00:00','2020-10-27 00:00:00','Success',8888,'10002423.SH',0);

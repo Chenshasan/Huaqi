@@ -5,11 +5,13 @@ package com.example.Huaqi.po;
  */
 public class TradePO {
     private Integer id;
+    private String tradeName;
     private String tradeType;
     private String startTime;
     private String endTime;
     private String status;
     private Double profit;
+    private Integer dealNum;
 
     public Integer getId() {
         return id;
@@ -17,6 +19,22 @@ public class TradePO {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getTradeName() {
+        return tradeName;
+    }
+
+    public void setTradeName(String tradeName) {
+        this.tradeName = tradeName;
+    }
+
+    public Integer getDealNum() {
+        return dealNum;
+    }
+
+    public void setDealNum(Integer dealNum) {
+        this.dealNum = dealNum;
     }
 
     public String getTradeType() {
@@ -63,11 +81,13 @@ public class TradePO {
     public String toString() {
         return "TradePO{" +
                 "id=" + id +
+                ", tradeName='" + tradeName + '\'' +
                 ", tradeType='" + tradeType + '\'' +
                 ", startTime='" + startTime + '\'' +
                 ", endTime='" + endTime + '\'' +
                 ", status='" + status + '\'' +
                 ", profit=" + profit +
+                ", dealNum=" + dealNum +
                 '}';
     }
 }

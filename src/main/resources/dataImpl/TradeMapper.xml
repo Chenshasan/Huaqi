@@ -7,10 +7,26 @@
         values (#{tradeType},#{startTime},#{endTime},#{status},#{profit})
     </insert>
 
+    <select id="getCompletedTrade" resultMap="Trade">
+        select * from trade where status!='Pending'
+    </select>
+
+    <select id="getTradeById" resultMap="Trade">
+        select * from trade where id=#{id}
+    </select>
+
+    <select id="getUncompletedTradeId" parameterType="java.lang.Integer">
+        select id from trade where status='Pending'
+    </select>
+
+
+
 
     <resultMap id="Trade" type="com.example.Huaqi.po.TradePO">
         <result column="trade_type" property="tradeType"/>
         <result column="start_time" property="startTime"/>
         <result column="end_time" property="endTime"/>
+        <result column="trade_name" property="tradeName"/>
+        <result column="deal_num" property="dealNum"/>
     </resultMap>
 </mapper>

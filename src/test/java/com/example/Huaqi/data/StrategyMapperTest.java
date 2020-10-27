@@ -18,7 +18,7 @@ import java.util.Date;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class StrategyMapperTest {
     @Autowired
-    StrategyMapper strategyMapper;
+    DealMapper strategyMapper;
 
     @Test
     public void test1(){

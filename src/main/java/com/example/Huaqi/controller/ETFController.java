@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @Author:cyz
  */
 @RestController
-@RequestMapping("/api/etf/")
+@RequestMapping("/api/etf")
 public class ETFController {
     @Autowired
     ETFService etfService;

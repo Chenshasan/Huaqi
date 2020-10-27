@@ -110,7 +110,8 @@ public class OptionServiceTest extends HuaqiApplicationTests{
     }
 
     @Test
-    public void testWaitAndQuery() throws JSONException {
+    public void testOrderAndWaitAndQuery() throws JSONException {
+        testOrder();
         try{
             Thread.sleep(10000);
             System.out.println("线程睡10s");

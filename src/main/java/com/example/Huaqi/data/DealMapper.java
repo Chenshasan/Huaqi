@@ -1,6 +1,6 @@
 package com.example.Huaqi.data;
 
-import com.example.Huaqi.po.StrategyPO;
+import com.example.Huaqi.po.DealPO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -9,13 +9,13 @@ import java.util.List;
 
 @Mapper
 @Repository
-public interface StrategyMapper {
+public interface DealMapper {
     /**
      * 添加买卖到数据库
-     * @param strategy
+     * @param dealPO
      * @return
      */
-    int addStrategy(StrategyPO strategy);
+    int addDeal(DealPO dealPO);
 
-    List<StrategyPO> getStrategiesByTradeId(@Param("tradeId") Integer tradeId);
+    List<DealPO> getDealsByTradeId(@Param("tradeId") Integer tradeId);
 }

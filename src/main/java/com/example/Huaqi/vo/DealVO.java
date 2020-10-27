@@ -1,9 +1,11 @@
-package com.example.Huaqi.po;
+package com.example.Huaqi.vo;
+
+import com.example.Huaqi.po.DealPO;
 
 /**
  * 买卖类，一次买卖
  */
-public class StrategyPO {
+public class DealVO {
     private int id;
     private String dealType;
     private String dealTime;
@@ -14,6 +16,21 @@ public class StrategyPO {
     private Double price;
     private Integer tradeId;
     private String item;
+    private String optionName;
+
+    public DealVO(DealPO dealPO){
+        this.id = dealPO.getId();
+        this.dealType = dealPO.getDealType();
+        this.dealTime = dealPO.getDealTime();
+        this.status = dealPO.getStatus();
+        this.volume = dealPO.getVolume();
+        this.transferFee = dealPO.getTransferFee();
+        this.pricePer = dealPO.getPricePer();
+        this.price = dealPO.getPrice();
+        this.tradeId = dealPO.getTradeId();
+        this.item = dealPO.getItem();
+        this.optionName = dealPO.getOptionName();
+    }
 
     public int getId() {
         return id;
@@ -95,9 +112,17 @@ public class StrategyPO {
         this.item = item;
     }
 
+    public String getOptionName() {
+        return optionName;
+    }
+
+    public void setOptionName(String optionName) {
+        this.optionName = optionName;
+    }
+
     @Override
     public String toString() {
-        return "StrategyPO{" +
+        return "DealVO{" +
                 "id=" + id +
                 ", dealType='" + dealType + '\'' +
                 ", dealTime='" + dealTime + '\'' +
@@ -108,6 +133,8 @@ public class StrategyPO {
                 ", price=" + price +
                 ", tradeId=" + tradeId +
                 ", item='" + item + '\'' +
+                ", optionName='" + optionName + '\'' +
                 '}';
     }
 }
+

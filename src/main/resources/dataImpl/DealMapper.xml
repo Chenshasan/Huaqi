@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.Huaqi.data.DealMapper">
+
+    <insert id="addDeal" parameterType="com.example.Huaqi.po.DealPO">
+        insert into deal(deal_type, deal_time, status, volume, price_per, transfer_fee, price, trade_id, item, option_name)
+        values (#{dealType},#{dealTime},#{status},#{volume},#{pricePer},#{transferFee},#{price},#{tradeId},#{item},#{optionName})
+    </insert>
+    <select id="getDealsByTradeId" resultMap="Deal">
+        select * from deal where trade_id=#{tradeId}
+    </select>
+
+
+    <resultMap id="Deal" type="com.example.Huaqi.po.DealPO">
+        <result column="deal_time" property="dealTime"/>
+        <result column="deal_type" property="dealType"/>
+        <result column="price_per" property="pricePer"/>
+        <result column="transfer_fee" property="transferFee"/>
+        <result column="trade_id" property="tradeId"/>
+        <result column="option_name" property="optionName"/>
+    </resultMap>
+</mapper>
